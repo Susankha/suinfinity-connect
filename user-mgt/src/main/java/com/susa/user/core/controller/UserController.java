@@ -3,6 +3,7 @@ package com.susa.user.core.controller;
 import com.susa.user.core.dto.UserDTO;
 import com.susa.user.core.model.User;
 import com.susa.user.core.service.UserService;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class UserController {
   @Autowired private UserService userService;
 
   @PostMapping("/users")
-  public ResponseEntity<?> createUser(@RequestBody UserDTO userDTO) {
+  public ResponseEntity<?> createUser(@Valid @RequestBody UserDTO userDTO) {
     System.out.println("Creating User " + userDTO.getName());
     boolean created = userService.createUser(userDTO);
     if (!created) {
