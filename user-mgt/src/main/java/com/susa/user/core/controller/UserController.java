@@ -4,8 +4,10 @@ import com.susa.user.core.dto.UserDTO;
 import com.susa.user.core.model.User;
 import com.susa.user.core.service.UserService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,21 +27,22 @@ public class UserController {
     System.out.println("Creating User " + userDTO.getName());
     boolean created = userService.createUser(userDTO);
     if (!created) {
-      ResponseEntity.badRequest().body("User " + userDTO.getName() + " creation failed");
+      ResponseEntity.badRequest().body("User " + userDTO.getName() + " registration failed");
     }
-    return ResponseEntity.ok().build();
+    return ResponseEntity.status(HttpStatus.CREATED)
+        .body("User " + userDTO.getName() + " successfully registered");
   }
 
-  @GetMapping("users/{name}")
-  public ResponseEntity<User> getUser(@PathVariable String name) {
+  @GetMapping(value = "users/{name}", produces = "application/json")
+  public ResponseEntity<User> getUser(@NotBlank @PathVariable String name) {
     User user = userService.getUser(name);
     if (user == null) {
-      return ResponseEntity.notFound().build();
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
     return ResponseEntity.ok().body(user);
   }
 
-  @GetMapping("/users")
+  @GetMapping(value = "users", produces = "application/json")
   public ResponseEntity<List<User>> getUsers() {
     List<User> users = userService.getUsers();
     if (users.isEmpty()) {
@@ -49,7 +52,8 @@ public class UserController {
   }
 
   @PutMapping("users/{name}")
-  public ResponseEntity<User> updateUser(@PathVariable String name, @RequestBody UserDTO user) {
+  public ResponseEntity<User> updateUser(
+      @NotBlank @PathVariable String name, @Valid @RequestBody UserDTO user) {
     User updatedUser = userService.updateUser(name, user);
     if (updatedUser == null) {
       return ResponseEntity.badRequest().build();
@@ -57,12 +61,12 @@ public class UserController {
     return ResponseEntity.ok().build();
   }
 
-  @DeleteMapping("users/{name}")
-  public ResponseEntity<String> deleteUser(@PathVariable String name) {
+  @DeleteMapping(value = "users/{name}", produces = "application/json")
+  public ResponseEntity<Void> deleteUser(@NotBlank @PathVariable String name) {
     boolean isDelete = userService.deleteUser(name);
     if (!isDelete) {
       return ResponseEntity.notFound().build();
     }
-    return ResponseEntity.ok().body("User " + name + " deleted");
+    return ResponseEntity.noContent().build();
   }
 }
