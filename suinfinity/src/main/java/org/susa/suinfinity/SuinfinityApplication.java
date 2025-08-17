@@ -6,8 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class SuinfinityApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(SuinfinityApplication.class, args);
-	}
-
+  public static void main(String[] args) {
+    SpringApplication.run(SuinfinityApplication.class, args);
+  }
 }

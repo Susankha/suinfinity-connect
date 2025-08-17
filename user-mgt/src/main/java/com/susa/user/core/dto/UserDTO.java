@@ -4,14 +4,16 @@ import jakarta.persistence.Embeddable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
 public class UserDTO {
 
   @NotBlank(message = "Name cannot be empty")
-  @Size(min = 1, max = 20, message = "Name should have a length between 2 to 20")
+  @Pattern(
+      regexp = "^[A-Za-z][A-Za-z0-9_]{7,19}$",
+      message =
+          "Name must start with a letter and contain only 8 to 20 alphanumeric characters or underscores")
   private String name;
 
   @Valid private Address address;
@@ -26,15 +28,19 @@ public class UserDTO {
   public static class Address {
 
     @NotBlank(message = "Street cannot be empty")
-    @Size(min = 1, max = 20, message = "Street should have a length between 2 to 20")
+    @Pattern(
+        regexp = "^[A-Za-z][A-Za-z0-9_]{4,19}$",
+        message = "Street should have a length between 5 to 20")
     private String street;
 
     @NotBlank(message = "City cannot be empty")
-    @Size(min = 1, max = 20, message = "City should have a length between 2 to 20")
+    @Pattern(
+        regexp = "^[A-Za-z][A-Za-z0-9_]{4,19}$",
+        message = "City should have a length between 5 to 20")
     private String city;
 
     @NotBlank(message = "ZipCode cannot be empty")
-    @Pattern(regexp = "^[0-9]{5}", message = "ZipCode must have 5 digits")
+    @Pattern(regexp = "^[0-9]{5}$", message = "ZipCode must have 5 digits")
     private String zipCode;
   }
 }
