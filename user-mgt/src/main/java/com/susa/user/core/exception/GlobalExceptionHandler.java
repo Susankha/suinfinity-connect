@@ -32,7 +32,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             .map(fieldError -> fieldError.getDefaultMessage())
             .toList();
     responseBody.put("errors", errors);
-    logger.error("Validation failed for argument ", ex);
+    logger.error("Validation failed : ", ex);
 
     return new ResponseEntity<>(responseBody, headers, status);
   }
