@@ -34,7 +34,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     responseBody.put("errors", errors);
     logger.error("Validation failed : ", ex);
 
-
     return new ResponseEntity<>(responseBody, headers, status);
   }
 }
