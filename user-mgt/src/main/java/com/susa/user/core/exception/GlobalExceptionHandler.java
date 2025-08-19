@@ -1,9 +1,19 @@
 package com.susa.user.core.exception;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -22,18 +32,30 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       HttpStatusCode status,
       WebRequest request) {
 
-    Map<String, Object> responseBody = new HashMap<>();
-    responseBody.put("time_stamp", Instant.now().toString());
-    responseBody.put("status", status.value());
-    responseBody.put("error", status.toString());
-
     List<String> errors =
         ex.getBindingResult().getFieldErrors().stream()
             .map(fieldError -> fieldError.getDefaultMessage())
             .toList();
-    responseBody.put("errors", errors);
+    DateTimeFormatter dateTimeFormatter =
+        DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss a 'UTC'");
+    ErrorResponse errorResponse =
+        new ErrorResponse(
+            Instant.now().atZone(ZoneOffset.UTC).format(dateTimeFormatter),
+            status.value(),
+            status.toString(),
+            errors);
     logger.error("Validation failed : ", ex);
-
-    return new ResponseEntity<>(responseBody, headers, status);
+    return new ResponseEntity<>(errorResponse, headers, status);
   }
+}
+
+@AllArgsConstructor
+@Getter
+@Setter
+class ErrorResponse {
+
+  private String timeStamp;
+  private int status;
+  private String errorMessage;
+  private List<String> errors;
 }
