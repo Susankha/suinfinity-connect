@@ -31,20 +31,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ex.getBindingResult().getFieldErrors().stream()
             .map(fieldError -> fieldError.getDefaultMessage())
             .toList();
-    String errorMessage = "Validation failed ";
-    ErrorResponse errorResponse = getErrorResponse(ex, status.value(), errorMessage, request);
+    String errorMessage = "Validation failed";
+    ErrorResponse errorResponse = getErrorResponse(status.value(), errorMessage, request);
     errorResponse.setErrors(errors);
     logger.error(errorMessage + " : ", ex);
-    return new ResponseEntity<>(errorResponse, headers, status);
+    return ResponseEntity.status(status.value()).headers(headers).body(errorResponse);
   }
 
   @Override
   protected ResponseEntity<Object> handleNoResourceFoundException(
       NoResourceFoundException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-
-    ErrorResponse errorResponse = getErrorResponse(ex, status.value(), ex.getMessage(), request);
-    logger.error("Resource not found : ", ex);
-
+    String errorMessage = "Resource not found";
+    ErrorResponse errorResponse = getErrorResponse(status.value(), ex.getMessage(), request);
+    logger.error(errorMessage, ex);
     return ResponseEntity.status(status.value()).headers(headers).body(errorResponse);
   }
 
@@ -55,9 +54,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     return Instant.now().atZone(ZoneOffset.UTC).format(dateTimeFormatter);
   }
 
-  private ErrorResponse getErrorResponse(
-      Exception ex, int status, String errorMessage, WebRequest request) {
-
+  private ErrorResponse getErrorResponse(int status, String errorMessage, WebRequest request) {
     ErrorResponse errorResponse =
         ErrorResponse.builder()
             .timeStamp(getTimeStamp())
@@ -75,8 +72,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 class ErrorResponse {
 
   @NonNull private String timeStamp;
-  @NonNull private int status;
-  private String errorMessage;
+  private int status;
+  @NonNull private String errorMessage;
   private List<String> errors;
   private String path;
 }
