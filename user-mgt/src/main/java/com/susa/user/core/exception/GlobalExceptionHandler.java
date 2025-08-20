@@ -1,26 +1,21 @@
 package com.susa.user.core.exception;
 
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NonNull;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
@@ -36,26 +31,52 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ex.getBindingResult().getFieldErrors().stream()
             .map(fieldError -> fieldError.getDefaultMessage())
             .toList();
+    String errorMessage = "Validation failed ";
+    ErrorResponse errorResponse = getErrorResponse(ex, status.value(), errorMessage, request);
+    errorResponse.setErrors(errors);
+    logger.error(errorMessage + " : ", ex);
+    return new ResponseEntity<>(errorResponse, headers, status);
+  }
+
+  @Override
+  protected ResponseEntity<Object> handleNoResourceFoundException(
+      NoResourceFoundException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+
+    ErrorResponse errorResponse = getErrorResponse(ex, status.value(), ex.getMessage(), request);
+    logger.error("Resource not found : ", ex);
+
+    return ResponseEntity.status(status.value()).headers(headers).body(errorResponse);
+  }
+
+  private String getTimeStamp() {
     DateTimeFormatter dateTimeFormatter =
         DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss a 'UTC'");
+
+    return Instant.now().atZone(ZoneOffset.UTC).format(dateTimeFormatter);
+  }
+
+  private ErrorResponse getErrorResponse(
+      Exception ex, int status, String errorMessage, WebRequest request) {
+
     ErrorResponse errorResponse =
-        new ErrorResponse(
-            Instant.now().atZone(ZoneOffset.UTC).format(dateTimeFormatter),
-            status.value(),
-            status.toString(),
-            errors);
-    logger.error("Validation failed : ", ex);
-    return new ResponseEntity<>(errorResponse, headers, status);
+        ErrorResponse.builder()
+            .timeStamp(getTimeStamp())
+            .status(status)
+            .errorMessage(errorMessage)
+            .path(((ServletWebRequest) request).getRequest().getRequestURI())
+            .build();
+
+    return errorResponse;
   }
 }
 
-@AllArgsConstructor
-@Getter
-@Setter
+@Data
+@Builder
 class ErrorResponse {
 
-  private String timeStamp;
-  private int status;
+  @NonNull private String timeStamp;
+  @NonNull private int status;
   private String errorMessage;
   private List<String> errors;
+  private String path;
 }

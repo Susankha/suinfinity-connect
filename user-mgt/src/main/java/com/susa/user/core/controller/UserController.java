@@ -33,7 +33,7 @@ public class UserController {
         .body("User " + userDTO.getName() + " successfully registered");
   }
 
-  @GetMapping(value = "users/{name}", produces = "application/json")
+  @GetMapping(value = "/users/{name}", produces = "application/json")
   public ResponseEntity<User> getUser(@NotBlank @PathVariable String name) {
     User user = userService.getUser(name);
     if (user == null) {
@@ -42,7 +42,7 @@ public class UserController {
     return ResponseEntity.ok().body(user);
   }
 
-  @GetMapping(value = "users", produces = "application/json")
+  @GetMapping(value = "/users", produces = "application/json")
   public ResponseEntity<List<User>> getUsers() {
     List<User> users = userService.getUsers();
     if (users.isEmpty()) {
@@ -51,7 +51,7 @@ public class UserController {
     return ResponseEntity.ok().body(users);
   }
 
-  @PutMapping("users/{name}")
+  @PutMapping("/users/{name}")
   public ResponseEntity<User> updateUser(
       @NotBlank @PathVariable String name, @Valid @RequestBody UserDTO user) {
     User updatedUser = userService.updateUser(name, user);
@@ -61,7 +61,7 @@ public class UserController {
     return ResponseEntity.ok().build();
   }
 
-  @DeleteMapping(value = "users/{name}", produces = "application/json")
+  @DeleteMapping(value = "/users/{name}", produces = "application/json")
   public ResponseEntity<Void> deleteUser(@NotBlank @PathVariable String name) {
     boolean isDelete = userService.deleteUser(name);
     if (!isDelete) {
