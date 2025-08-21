@@ -7,7 +7,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,48 +21,29 @@ public class UserController {
 
   @Autowired private UserService userService;
 
-  @PostMapping("/users")
-  public ResponseEntity<?> createUser(@Valid @RequestBody UserDTO userDTO) {
-    System.out.println("Creating User " + userDTO.getName());
-    boolean created = userService.createUser(userDTO);
-    if (!created) {
-      ResponseEntity.badRequest().body("User " + userDTO.getName() + " registration failed");
-    }
-    return ResponseEntity.status(HttpStatus.CREATED)
-        .body("User " + userDTO.getName() + " successfully registered");
+  @PostMapping(value = "/users", produces = "application/json")
+  public ResponseEntity<?> registerUser(@Valid @RequestBody UserDTO userDTO) {
+    return userService.registerUser(userDTO);
   }
 
   @GetMapping(value = "/users/{name}", produces = "application/json")
   public ResponseEntity<User> getUser(@NotBlank @PathVariable String name) throws Exception {
-    User user = userService.getUser(name);
-    return ResponseEntity.ok().body(user);
+    return userService.getUser(name);
   }
 
   @GetMapping(value = "/users", produces = "application/json")
   public ResponseEntity<List<User>> getUsers() {
-    List<User> users = userService.getUsers();
-    if (users.isEmpty()) {
-      return ResponseEntity.noContent().build();
-    }
-    return ResponseEntity.ok().body(users);
+    return userService.getUsers();
   }
 
-  @PutMapping("/users/{name}")
+  @PutMapping(value = "/users/{name}", produces = "application/json")
   public ResponseEntity<User> updateUser(
       @NotBlank @PathVariable String name, @Valid @RequestBody UserDTO user) {
-    User updatedUser = userService.updateUser(name, user);
-    if (updatedUser == null) {
-      return ResponseEntity.badRequest().build();
-    }
-    return ResponseEntity.ok().build();
+    return userService.updateUser(name, user);
   }
 
   @DeleteMapping(value = "/users/{name}", produces = "application/json")
-  public ResponseEntity<Void> deleteUser(@NotBlank @PathVariable String name) {
-    boolean isDelete = userService.deleteUser(name);
-    if (!isDelete) {
-      return ResponseEntity.notFound().build();
-    }
-    return ResponseEntity.noContent().build();
+  public ResponseEntity<?> deleteUser(@NotBlank @PathVariable String name) {
+    return userService.deleteUser(name);
   }
 }
