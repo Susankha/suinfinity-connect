@@ -8,8 +8,12 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @Service
 public class UserService {
@@ -17,50 +21,57 @@ public class UserService {
   Logger logger = LoggerFactory.getLogger(UserService.class);
   @Autowired private UserRepository userRepository;
 
-  public boolean createUser(UserDTO userDTO) {
+  public ResponseEntity<?> registerUser(UserDTO userDTO) throws RuntimeException {
     UserMapper userMapper = new UserMapper();
     User mappedUser = userMapper.mapUserDTOtoUser(userDTO);
-    User savedUser = userRepository.save(mappedUser);
-    if (savedUser.getUserId() == null) {
-      logger.error("User {} creation failed ", mappedUser.getName());
-      return false;
+    try {
+      userRepository.save(mappedUser);
+    } catch (RuntimeException ex) {
+      logger.error("User {} registration failed ", mappedUser.getName());
+      throw new RuntimeException(
+          "User " + "'" + mappedUser.getName() + "'" + " registration failed");
     }
-    return true;
+    return ResponseEntity.status(HttpStatus.CREATED)
+        .body("User " + userDTO.getName() + " successfully registered");
   }
 
-  public User getUser(String userName) throws Exception {
+  public ResponseEntity<User> getUser(String userName) throws NoResourceFoundException {
     User user = userRepository.findByName(userName);
     if (user == null) {
       logger.error("User '{}' does not exist ", userName);
-      throw new RuntimeException("User " + "'" + userName + "'" + " does not exist");
+      throw new NoResourceFoundException(
+          HttpMethod.GET, "User " + "'" + userName + "'" + " does not exist");
     }
-    return user;
+    return ResponseEntity.ok().body(user);
   }
 
-  public List<User> getUsers() {
+  public ResponseEntity<List<User>> getUsers() {
     List<User> users = userRepository.findAll();
     if (users.isEmpty()) {
-      return null;
+      return ResponseEntity.noContent().build();
     }
-    return users;
+    return ResponseEntity.ok().body(users);
   }
 
-  public User updateUser(String userName, UserDTO userDTO) {
-    User user = userRepository.findByName(userName);
-    user.setName(userDTO.getName());
-    user.setAddress(userDTO.getAddress());
-    user = userRepository.save(user);
-    return user;
+  public ResponseEntity<User> updateUser(String userName, UserDTO userDTO) {
+    try {
+      User user = userRepository.findByName(userName);
+      user.setName(userDTO.getName());
+      user.setAddress(userDTO.getAddress());
+      userRepository.save(user);
+    } catch (RuntimeException e) {
+      throw new RuntimeException("User " + "'" + userName + "'" + " update failed");
+    }
+    return ResponseEntity.ok().build();
   }
 
   @Transactional
-  public boolean deleteUser(String userName) {
-    Long count = userRepository.deleteByName(userName);
-    boolean isDelete = false;
-    if (count > 0) {
-      logger.info("User {} has deleted ", userName);
-      isDelete = true;
+  public ResponseEntity<?> deleteUser(String userName) {
+    try {
+      userRepository.deleteByName(userName);
+    } catch (RuntimeException e) {
+      throw new RuntimeException("User " + "'" + userName + "'" + " deletion failed");
     }
-    return isDelete;
+    return ResponseEntity.status(HttpStatus.OK).body("User " + userName + " successfully deleted");
   }
 }

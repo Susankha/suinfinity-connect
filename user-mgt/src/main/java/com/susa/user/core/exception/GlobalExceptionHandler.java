@@ -56,6 +56,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   protected ResponseEntity<Object> handleGenericException(Exception ex, WebRequest webRequest) {
     ErrorResponse errorResponse =
         getErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage(), webRequest);
+    String errorMessage = "Internal error : " + ex.getMessage();
+    logger.error(errorMessage, ex);
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
         .contentType(MediaType.APPLICATION_JSON)
         .body(errorResponse);
