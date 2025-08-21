@@ -28,11 +28,11 @@ public class UserService {
     return true;
   }
 
-  public User getUser(String userName) {
+  public User getUser(String userName) throws Exception {
     User user = userRepository.findByName(userName);
     if (user == null) {
-      logger.error("User {} does not exist ", userName);
-      return null;
+      logger.error("User '{}' does not exist ", userName);
+      throw new RuntimeException("User " + "'" + userName + "'" + " does not exist");
     }
     return user;
   }
