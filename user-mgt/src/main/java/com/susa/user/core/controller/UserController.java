@@ -14,35 +14,37 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/users")
 public class UserController {
 
   @Autowired private UserService userService;
 
-  @PostMapping(value = "/users", produces = "application/json")
+  @PostMapping(value = "/new", produces = "application/json")
   public ResponseEntity<?> registerUser(@Valid @RequestBody UserDTO userDTO) {
     return userService.registerUser(userDTO);
   }
 
-  @GetMapping(value = "/users/{name}", produces = "application/json")
+  @GetMapping(value = "/get/{name}", produces = "application/json")
   public ResponseEntity<User> getUser(@NotBlank @PathVariable String name) throws Exception {
     return userService.getUser(name);
   }
 
-  @GetMapping(value = "/users", produces = "application/json")
+  @GetMapping(value = "/all", produces = "application/json")
   public ResponseEntity<List<User>> getUsers() {
     return userService.getUsers();
   }
 
-  @PutMapping(value = "/users/{name}", produces = "application/json")
+  @PutMapping(value = "/update/{name}", produces = "application/json")
   public ResponseEntity<User> updateUser(
       @NotBlank @PathVariable String name, @Valid @RequestBody UserDTO user) {
     return userService.updateUser(name, user);
   }
 
-  @DeleteMapping(value = "/users/{name}", produces = "application/json")
+  @DeleteMapping(value = "/delete/{name}", produces = "application/json")
   public ResponseEntity<?> deleteUser(@NotBlank @PathVariable String name) {
     return userService.deleteUser(name);
   }

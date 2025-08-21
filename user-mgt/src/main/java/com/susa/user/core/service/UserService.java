@@ -39,8 +39,7 @@ public class UserService {
     User user = userRepository.findByName(userName);
     if (user == null) {
       logger.error("User '{}' does not exist ", userName);
-      throw new NoResourceFoundException(
-          HttpMethod.GET, "User " + "'" + userName + "'" + " does not exist");
+      throw new NoResourceFoundException(HttpMethod.GET, userName);
     }
     return ResponseEntity.ok().body(user);
   }
