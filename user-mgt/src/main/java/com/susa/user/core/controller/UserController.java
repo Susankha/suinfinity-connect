@@ -34,11 +34,8 @@ public class UserController {
   }
 
   @GetMapping(value = "/users/{name}", produces = "application/json")
-  public ResponseEntity<User> getUser(@NotBlank @PathVariable String name) {
+  public ResponseEntity<User> getUser(@NotBlank @PathVariable String name) throws Exception {
     User user = userService.getUser(name);
-    if (user == null) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-    }
     return ResponseEntity.ok().body(user);
   }
 
