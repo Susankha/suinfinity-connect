@@ -1,5 +1,7 @@
 package com.susa.user.core.exception;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -41,8 +43,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   @Override
   protected ResponseEntity<Object> handleNoResourceFoundException(
       NoResourceFoundException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-    String errorMessage = "Resource not found";
-    ErrorResponse errorResponse = getErrorResponse(status.value(), ex.getMessage(), request);
+    String errorMessage = "Resource not found : " + ex.getResourcePath();
+    ErrorResponse errorResponse = getErrorResponse(status.value(), errorMessage, request);
     logger.error(errorMessage, ex);
     return ResponseEntity.status(status.value()).headers(headers).body(errorResponse);
   }
@@ -74,6 +76,9 @@ class ErrorResponse {
   @NonNull private String timeStamp;
   private int status;
   @NonNull private String errorMessage;
+
+  @JsonInclude(Include.NON_NULL)
   private List<String> errors;
+
   private String path;
 }
