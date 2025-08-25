@@ -6,5 +6,6 @@ This component is responsible to handle user management of the suinfinity soluti
 
 user-mgt comes with rest APIs to handle user management scenarios.
 
-![](C:\Users\susan\Pictures\Screenshots\spring_boot\user-mgt_swagger.png)
+Swagger UI -> http://localhost:8080//api-docs
 
+<img width="1877" height="1171" alt="user-mgt_swagger" src="https://github.com/user-attachments/assets/92c4509c-71a5-47ba-8183-bdac441dc88f" />
