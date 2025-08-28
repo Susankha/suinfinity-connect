@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.random.RandomGenerator;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
-import org.junit.platform.engine.TestExecutionResult.Status;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -23,7 +22,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @WebMvcTest(UserController.class)
 public class UserControllerTests {
@@ -83,9 +81,9 @@ public class UserControllerTests {
         .andExpect(MockMvcResultMatchers.status().isOk());
   }
 
+  @Test
   public void deleteUser_shouldReturns_statusDeleted() throws Exception {
     String userName = "test_user";
-    User user = getUser();
     Mockito.when(userService.deleteUser(userName)).thenReturn(ResponseEntity.noContent().build());
     mockMvc
         .perform(MockMvcRequestBuilders.delete("/users/delete/{user}", userName))
