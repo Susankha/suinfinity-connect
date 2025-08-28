@@ -5,8 +5,7 @@ import com.susa.user.core.mapper.UserMapper;
 import com.susa.user.core.model.User;
 import com.susa.user.core.repository.UserRepository;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -15,10 +14,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+@Log4j2
 @Service
 public class UserService {
 
-  Logger logger = LoggerFactory.getLogger(UserService.class);
   @Autowired private UserRepository userRepository;
 
   public ResponseEntity<?> registerUser(UserDTO userDTO) throws RuntimeException {
@@ -27,7 +26,7 @@ public class UserService {
     try {
       userRepository.save(mappedUser);
     } catch (RuntimeException ex) {
-      logger.error("User {} registration failed ", mappedUser.getName());
+      log.error("User {} registration failed ", mappedUser.getName());
       throw new RuntimeException(
           "User " + "'" + mappedUser.getName() + "'" + " registration failed");
     }
@@ -38,7 +37,7 @@ public class UserService {
   public ResponseEntity<User> getUser(String userName) throws NoResourceFoundException {
     User user = userRepository.findByName(userName);
     if (user == null) {
-      logger.error("User '{}' does not exist ", userName);
+      log.error("User '{}' does not exist ", userName);
       throw new NoResourceFoundException(HttpMethod.GET, userName);
     }
     return ResponseEntity.ok().body(user);

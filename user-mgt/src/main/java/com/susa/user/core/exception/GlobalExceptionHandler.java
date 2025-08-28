@@ -9,6 +9,7 @@ import java.util.List;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -22,6 +23,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+@Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -39,7 +41,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     String errorMessage = "Validation failed";
     ErrorResponse errorResponse = getErrorResponse(status.value(), errorMessage, request);
     errorResponse.setErrors(errors);
-    logger.error(errorMessage + " : ", ex);
+    log.error(errorMessage, ex);
     return ResponseEntity.status(status.value()).headers(headers).body(errorResponse);
   }
 
@@ -48,7 +50,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       NoResourceFoundException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
     String errorMessage = "Resource not found : " + ex.getResourcePath();
     ErrorResponse errorResponse = getErrorResponse(status.value(), errorMessage, request);
-    logger.error(errorMessage, ex);
+    log.error(errorMessage, ex);
     return ResponseEntity.status(status.value()).headers(headers).body(errorResponse);
   }
 
@@ -57,7 +59,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     ErrorResponse errorResponse =
         getErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage(), webRequest);
     String errorMessage = "Internal error : " + ex.getMessage();
-    logger.error(errorMessage, ex);
+    log.error(errorMessage, ex);
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
         .contentType(MediaType.APPLICATION_JSON)
         .body(errorResponse);
