@@ -64,12 +64,12 @@ public class UserService {
   }
 
   @Transactional
-  public ResponseEntity<?> deleteUser(String userName) {
+  public ResponseEntity<Void> deleteUser(String userName) {
     try {
       userRepository.deleteByName(userName);
     } catch (RuntimeException e) {
       throw new RuntimeException("User " + "'" + userName + "'" + " deletion failed");
     }
-    return ResponseEntity.status(HttpStatus.OK).body("User " + userName + " successfully deleted");
+    return ResponseEntity.noContent().build();
   }
 }

@@ -83,6 +83,15 @@ public class UserControllerTests {
         .andExpect(MockMvcResultMatchers.status().isOk());
   }
 
+  public void deleteUser_shouldReturns_statusDeleted() throws Exception {
+    String userName = "test_user";
+    User user = getUser();
+    Mockito.when(userService.deleteUser(userName)).thenReturn(ResponseEntity.noContent().build());
+    mockMvc
+        .perform(MockMvcRequestBuilders.delete("/users/delete/{user}", userName))
+        .andExpect(MockMvcResultMatchers.status().isNoContent());
+  }
+
   private User getUser() {
     User user = new User();
     user.setUserId(RandomGenerator.getDefault().nextLong());
