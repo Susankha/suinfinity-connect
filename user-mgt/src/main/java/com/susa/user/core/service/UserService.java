@@ -52,15 +52,15 @@ public class UserService {
   }
 
   public ResponseEntity<User> updateUser(String userName, UserDTO userDTO) {
+    User user = userRepository.findByName(userName);
     try {
-      User user = userRepository.findByName(userName);
       user.setName(userDTO.getName());
       user.setAddress(userDTO.getAddress());
       userRepository.save(user);
     } catch (RuntimeException e) {
       throw new RuntimeException("User " + "'" + userName + "'" + " update failed");
     }
-    return ResponseEntity.ok().build();
+    return ResponseEntity.ok().body(user);
   }
 
   @Transactional
