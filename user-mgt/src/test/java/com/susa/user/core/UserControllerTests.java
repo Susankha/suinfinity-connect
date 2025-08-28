@@ -7,6 +7,8 @@ import com.susa.user.core.dto.UserDTO;
 import com.susa.user.core.dto.UserDTO.Address;
 import com.susa.user.core.model.User;
 import com.susa.user.core.service.UserService;
+import java.util.Arrays;
+import java.util.List;
 import java.util.random.RandomGenerator;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -26,14 +28,12 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 public class UserControllerTests {
 
   @MockitoBean UserService userService;
-
   @Autowired MockMvc mockMvc;
 
   @Test
-  public void registerUser_status_returnsOk() throws Exception {
+  public void registerUser_shouldReturns_statusCreated() throws Exception {
     UserDTO userDTO = new UserDTO("test_user", getAddress());
     String jsonRequest = getJsonPayload(userDTO);
-
     Mockito.when(userService.registerUser(userDTO))
         .thenReturn(new ResponseEntity<>(HttpStatus.CREATED));
 
@@ -46,20 +46,32 @@ public class UserControllerTests {
   }
 
   @Test
-  public void getUser_status_returnsUser() throws Exception {
-
-    User user = new User();
-    user.setUserId(RandomGenerator.getDefault().nextLong());
-    user.setName("test_user");
-    user.setAddress(this.getAddress());
-
+  public void getUser_shouldReturns_User() throws Exception {
+    User user = this.getUser();
     Mockito.when(userService.getUser(user.getName())).thenReturn(ResponseEntity.ok().body(user));
-
     mockMvc
         .perform(MockMvcRequestBuilders.get("/users/get/" + user.getName()))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.startsWith("test")))
         .andExpect(MockMvcResultMatchers.jsonPath("$.address.street", Matchers.notNullValue()));
+  }
+
+  @Test
+  public void getUsers_shouldReturns_Users() throws Exception {
+    List<User> users = List.of(getUser());
+    Mockito.when(userService.getUsers()).thenReturn(ResponseEntity.ok(users));
+    mockMvc
+        .perform(MockMvcRequestBuilders.get("/users/all"))
+        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty());
+  }
+
+  private User getUser() {
+    User user = new User();
+    user.setUserId(RandomGenerator.getDefault().nextLong());
+    user.setName("test_user");
+    user.setAddress(this.getAddress());
+    return user;
   }
 
   private Address getAddress() {
