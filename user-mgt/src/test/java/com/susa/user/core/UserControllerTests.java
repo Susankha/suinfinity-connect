@@ -30,7 +30,7 @@ public class UserControllerTests {
     address.setStreet("test_street");
     address.setCity("test_city");
     address.setZipCode("12345");
-    UserDTO userDTO = new UserDTO("testUser", address);
+    UserDTO userDTO = new UserDTO("test_User", address);
 
     ObjectMapper objectMapper = new ObjectMapper();
     String jsonRequest = objectMapper.writeValueAsString(userDTO);
