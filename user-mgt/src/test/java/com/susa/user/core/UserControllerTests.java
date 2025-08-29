@@ -26,12 +26,13 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @WebMvcTest(UserController.class)
 public class UserControllerTests {
 
+  private static final String TEST_USER="test_user";
   @MockitoBean UserService userService;
   @Autowired MockMvc mockMvc;
 
   @Test
   public void registerUser_shouldReturns_statusCreated() throws Exception {
-    UserDTO userDTO = new UserDTO("test_user", getAddress());
+    UserDTO userDTO = new UserDTO(TEST_USER, getAddress());
     String jsonRequest = getJsonPayload(userDTO);
     Mockito.when(userService.registerUser(userDTO))
         .thenReturn(new ResponseEntity<>(HttpStatus.CREATED));
@@ -67,7 +68,7 @@ public class UserControllerTests {
 
   @Test
   public void updateUser_shouldReturns_updatedUser() throws Exception {
-    UserDTO userDTO = new UserDTO("test_user", getAddress());
+    UserDTO userDTO = new UserDTO(TEST_USER, getAddress());
     UserMapper userMapper = new UserMapper();
     User user = userMapper.mapUserDTOtoUser(userDTO);
     String payload = getJsonPayload(userDTO);
@@ -83,7 +84,7 @@ public class UserControllerTests {
 
   @Test
   public void deleteUser_shouldReturns_statusDeleted() throws Exception {
-    String userName = "test_user";
+    String userName = TEST_USER;
     Mockito.when(userService.deleteUser(userName)).thenReturn(ResponseEntity.noContent().build());
     mockMvc
         .perform(MockMvcRequestBuilders.delete("/users/delete/{user}", userName))
@@ -93,7 +94,7 @@ public class UserControllerTests {
   private User getUser() {
     User user = new User();
     user.setUserId(RandomGenerator.getDefault().nextLong());
-    user.setName("test_user");
+    user.setName(TEST_USER);
     user.setAddress(this.getAddress());
     return user;
   }
