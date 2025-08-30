@@ -26,7 +26,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @WebMvcTest(UserController.class)
 public class UserControllerTests {
 
-  private static final String TEST_USER="test_user";
+  private static final String TEST_USER = "test_user";
   @MockitoBean UserService userService;
   @Autowired MockMvc mockMvc;
 
@@ -69,8 +69,7 @@ public class UserControllerTests {
   @Test
   public void updateUser_shouldReturns_updatedUser() throws Exception {
     UserDTO userDTO = new UserDTO(TEST_USER, getAddress());
-    UserMapper userMapper = new UserMapper();
-    User user = userMapper.mapUserDTOtoUser(userDTO);
+    User user = UserMapper.INSTANCE.toUser(userDTO);
     String payload = getJsonPayload(userDTO);
     Mockito.when(userService.updateUser("new_test_user", userDTO))
         .thenReturn(ResponseEntity.ok().body(user));

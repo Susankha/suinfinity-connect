@@ -21,8 +21,7 @@ public class UserService {
   @Autowired private UserRepository userRepository;
 
   public ResponseEntity<?> registerUser(UserDTO userDTO) throws RuntimeException {
-    UserMapper userMapper = new UserMapper();
-    User mappedUser = userMapper.mapUserDTOtoUser(userDTO);
+    User mappedUser = UserMapper.INSTANCE.toUser(userDTO);
     try {
       userRepository.save(mappedUser);
     } catch (RuntimeException ex) {
