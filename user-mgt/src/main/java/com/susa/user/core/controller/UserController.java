@@ -1,6 +1,7 @@
 package com.susa.user.core.controller;
 
 import com.susa.user.core.dto.UserDTO;
+import com.susa.user.core.dto.UserResponseDTO;
 import com.susa.user.core.model.User;
 import com.susa.user.core.service.UserService;
 import jakarta.validation.Valid;
@@ -29,12 +30,13 @@ public class UserController {
   }
 
   @GetMapping(value = "/get/{name}", produces = "application/json")
-  public ResponseEntity<User> getUser(@NotBlank @PathVariable String name) throws Exception {
+  public ResponseEntity<UserResponseDTO> getUser(@NotBlank @PathVariable String name)
+      throws Exception {
     return userService.getUser(name);
   }
 
   @GetMapping(value = "/all", produces = "application/json")
-  public ResponseEntity<List<User>> getUsers() {
+  public ResponseEntity<List<UserResponseDTO>> getUsers() {
     return userService.getUsers();
   }
 

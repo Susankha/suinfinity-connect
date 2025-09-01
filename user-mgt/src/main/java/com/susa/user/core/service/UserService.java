@@ -1,6 +1,7 @@
 package com.susa.user.core.service;
 
 import com.susa.user.core.dto.UserDTO;
+import com.susa.user.core.dto.UserResponseDTO;
 import com.susa.user.core.mapper.UserMapper;
 import com.susa.user.core.model.User;
 import com.susa.user.core.repository.UserRepository;
@@ -21,8 +22,7 @@ public class UserService {
   @Autowired private UserRepository userRepository;
 
   public ResponseEntity<?> registerUser(UserDTO userDTO) throws RuntimeException {
-    UserMapper userMapper = new UserMapper();
-    User mappedUser = userMapper.mapUserDTOtoUser(userDTO);
+    User mappedUser = UserMapper.INSTANCE.toUser(userDTO);
     try {
       userRepository.save(mappedUser);
     } catch (RuntimeException ex) {
@@ -34,21 +34,24 @@ public class UserService {
         .body("User " + userDTO.getName() + " successfully registered");
   }
 
-  public ResponseEntity<User> getUser(String userName) throws NoResourceFoundException {
+  public ResponseEntity<UserResponseDTO> getUser(String userName) throws NoResourceFoundException {
     User user = userRepository.findByName(userName);
+    UserResponseDTO userResponseDTO = UserMapper.INSTANCE.toUserResponseDto(user);
     if (user == null) {
       log.error("User '{}' does not exist ", userName);
       throw new NoResourceFoundException(HttpMethod.GET, userName);
     }
-    return ResponseEntity.ok().body(user);
+    return ResponseEntity.ok().body(userResponseDTO);
   }
 
-  public ResponseEntity<List<User>> getUsers() {
+  public ResponseEntity<List<UserResponseDTO>> getUsers() {
     List<User> users = userRepository.findAll();
+    List<UserResponseDTO> userResponseDTOS =
+        users.stream().map(UserMapper.INSTANCE::toUserResponseDto).toList();
     if (users.isEmpty()) {
       return ResponseEntity.noContent().build();
     }
-    return ResponseEntity.ok().body(users);
+    return ResponseEntity.ok().body(userResponseDTOS);
   }
 
   public ResponseEntity<User> updateUser(String userName, UserDTO userDTO) {
