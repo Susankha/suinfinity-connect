@@ -5,11 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.susa.user.core.controller.UserController;
 import com.susa.user.core.dto.UserDTO;
 import com.susa.user.core.dto.UserDTO.Address;
+import com.susa.user.core.dto.UserResponseDTO;
 import com.susa.user.core.mapper.UserMapper;
 import com.susa.user.core.model.User;
 import com.susa.user.core.service.UserService;
 import java.util.List;
 import java.util.random.RandomGenerator;
+import java.util.stream.Stream;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -48,7 +50,8 @@ public class UserControllerTests {
   @Test
   public void getUser_shouldReturns_User() throws Exception {
     User user = this.getUser();
-    Mockito.when(userService.getUser(user.getName())).thenReturn(ResponseEntity.ok().body(user));
+    UserResponseDTO userDTO = UserMapper.INSTANCE.toUserResponseDto(user);
+    Mockito.when(userService.getUser(user.getName())).thenReturn(ResponseEntity.ok().body(userDTO));
     mockMvc
         .perform(MockMvcRequestBuilders.get("/users/get/{user}", user.getName()))
         .andExpect(MockMvcResultMatchers.status().isOk())
@@ -58,8 +61,9 @@ public class UserControllerTests {
 
   @Test
   public void getUsers_shouldReturns_Users() throws Exception {
-    List<User> users = List.of(getUser());
-    Mockito.when(userService.getUsers()).thenReturn(ResponseEntity.ok(users));
+    List<UserResponseDTO> userResponseDTOS =
+        Stream.of(getUser()).map(UserMapper.INSTANCE::toUserResponseDto).toList();
+    Mockito.when(userService.getUsers()).thenReturn(ResponseEntity.ok(userResponseDTOS));
     mockMvc
         .perform(MockMvcRequestBuilders.get("/users/all"))
         .andExpect(MockMvcResultMatchers.status().isOk())

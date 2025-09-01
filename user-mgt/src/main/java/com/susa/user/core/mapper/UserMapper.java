@@ -1,6 +1,7 @@
 package com.susa.user.core.mapper;
 
 import com.susa.user.core.dto.UserDTO;
+import com.susa.user.core.dto.UserResponseDTO;
 import com.susa.user.core.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants.ComponentModel;
@@ -13,5 +14,5 @@ public interface UserMapper {
 
   User toUser(UserDTO userDTO);
 
-  UserDTO toUserDto(User user);
+  UserResponseDTO toUserResponseDto(User user);
 }
