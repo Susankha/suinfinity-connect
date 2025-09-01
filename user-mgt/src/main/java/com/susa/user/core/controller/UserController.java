@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,29 +25,29 @@ public class UserController {
 
   @Autowired private UserService userService;
 
-  @PostMapping(value = "/new", produces = "application/json")
+  @PostMapping(value = "/new", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> registerUser(@Valid @RequestBody UserDTO userDTO) {
     return userService.registerUser(userDTO);
   }
 
-  @GetMapping(value = "/get/{name}", produces = "application/json")
+  @GetMapping(value = "/get/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<UserResponseDTO> getUser(@NotBlank @PathVariable String name)
       throws Exception {
     return userService.getUser(name);
   }
 
-  @GetMapping(value = "/all", produces = "application/json")
+  @GetMapping(value = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<UserResponseDTO>> getUsers() {
     return userService.getUsers();
   }
 
-  @PutMapping(value = "/update/{name}", produces = "application/json")
+  @PutMapping(value = "/update/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<User> updateUser(
       @NotBlank @PathVariable String name, @Valid @RequestBody UserDTO user) {
     return userService.updateUser(name, user);
   }
 
-  @DeleteMapping(value = "/delete/{name}", produces = "application/json")
+  @DeleteMapping(value = "/delete/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> deleteUser(@NotBlank @PathVariable String name) {
     return userService.deleteUser(name);
   }
