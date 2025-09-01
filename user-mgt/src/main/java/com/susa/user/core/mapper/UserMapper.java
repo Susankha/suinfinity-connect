@@ -1,16 +1,18 @@
 package com.susa.user.core.mapper;
 
 import com.susa.user.core.dto.UserDTO;
+import com.susa.user.core.dto.UserResponseDTO;
 import com.susa.user.core.model.User;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants.ComponentModel;
+import org.mapstruct.factory.Mappers;
 
-public class UserMapper {
+@Mapper(componentModel = ComponentModel.SPRING)
+public interface UserMapper {
 
-  public User mapUserDTOtoUser(UserDTO userDTO) {
-    User user;
-    user = new User();
-    user.setName(userDTO.getName());
-    user.setAddress(userDTO.getAddress());
+  UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
-    return user;
-  }
+  User toUser(UserDTO userDTO);
+
+  UserResponseDTO toUserResponseDto(User user);
 }
