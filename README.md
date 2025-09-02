@@ -21,3 +21,5 @@ Swagger UI → [http://localhost:8080/api-docs](http://localhost:8080/swagger-ui
 Enabled actuator for monitoring purposes such as service health info, metrics, mappings.
 
 Actuator URL → http://localhost:8080/details 
+
+Logfile URL → http://localhost:8080/details/logfile
