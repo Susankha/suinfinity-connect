@@ -36,11 +36,11 @@ public class UserService {
 
   public ResponseEntity<UserResponseDTO> getUser(String userName) throws NoResourceFoundException {
     User user = userRepository.findByName(userName);
-    UserResponseDTO userResponseDTO = UserMapper.INSTANCE.toUserResponseDto(user);
     if (user == null) {
       log.error("User '{}' does not exist ", userName);
       throw new NoResourceFoundException(HttpMethod.GET, userName);
     }
+    UserResponseDTO userResponseDTO = UserMapper.INSTANCE.toUserResponseDto(user);
     return ResponseEntity.ok().body(userResponseDTO);
   }
 

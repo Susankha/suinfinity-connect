@@ -1,7 +1,9 @@
 package com.suinfinity.product.core.dto;
 
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.PositiveOrZero;
 import java.math.BigDecimal;
@@ -26,6 +28,11 @@ public class ProductDTO {
           "description must start with a letter and contain only alphanumeric characters or underscores")
   private String description;
 
+  @NotNull(message = "product price cannot be empty")
+  @Digits(
+      integer = 10,
+      fraction = 2,
+      message = "price must have at most 10 integer digits and 2 decimal places")
   @DecimalMin(value = "0.01", message = "price must be greater than zero")
   private BigDecimal price;
 
