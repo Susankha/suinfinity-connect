@@ -36,13 +36,15 @@ public class ProductService {
 
   public ResponseEntity<ProductResponseDTO> getProduct(String productName)
       throws NoResourceFoundException {
-    Product product = productRepository.findByName(productName);
-    if (product == null) {
-      log.error("Product '{}' does not exist ", productName);
-      throw new NoResourceFoundException(HttpMethod.GET, productName);
-    }
+    Product product =
+        productRepository
+            .findByName(productName)
+            .orElseThrow(
+                () -> {
+                  log.error("Product '{}' does not exist ", productName);
+                  return new NoResourceFoundException(HttpMethod.GET, productName);
+                });
     ProductResponseDTO productResponseDTO = ProductMapper.INSTANCE.toProductResponseDTO(product);
-
     return ResponseEntity.ok().body(productResponseDTO);
   }
 
@@ -50,21 +52,30 @@ public class ProductService {
     List<Product> products = productRepository.findAll();
     List<ProductResponseDTO> productResponseDTOS =
         products.stream().map(ProductMapper.INSTANCE::toProductResponseDTO).toList();
-
     return ResponseEntity.ok().body(productResponseDTOS);
   }
 
   public ResponseEntity<ProductResponseDTO> updateProduct(
       String productName, ProductDTO productDTO) {
-    Product product = productRepository.findByName(productName);
+    Product product =
+        productRepository
+            .findByName(productName)
+            .orElseThrow(
+                () -> {
+                  log.error("Product '{}' does not exist ", productName);
+                  return new RuntimeException(
+                      "Product " + "'" + productName + "'" + " does not exist");
+                });
     product.setName(productDTO.getName());
     product.setDescription(productDTO.getDescription());
     product.setPrice(productDTO.getPrice());
     product.setStockQuantity(productDTO.getStockQuantity());
-
-    productRepository.save(product);
+    try {
+      productRepository.save(product);
+    } catch (RuntimeException ex) {
+      throw new RuntimeException("Product " + "'" + productName + "'" + " update failed");
+    }
     ProductResponseDTO productResponseDTO = ProductMapper.INSTANCE.toProductResponseDTO(product);
-
     return ResponseEntity.ok().body(productResponseDTO);
   }
 
