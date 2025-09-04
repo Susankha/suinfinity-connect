@@ -14,23 +14,21 @@ public class ProductDTO {
 
   @NotBlank(message = "product name cannot be empty")
   @Pattern(
-      regexp = "^[A-Za-z][A-Za-z0-9_]{7,19}$",
+      regexp = "^[A-Za-z][A-Za-z0-9_\\s]{7,19}+$",
       message =
           "product name must start with a letter and contain only 8 to 20 alphanumeric characters or underscores")
-  private String productName;
+  private String name;
 
   @NotBlank(message = "description cannot be empty")
   @Pattern(
-      regexp = "^[A-Za-z][A-Za-z0-9_]$",
+      regexp = "^[A-Za-z][A-Za-z0-9_\\s]+$",
       message =
           "description must start with a letter and contain only alphanumeric characters or underscores")
   private String description;
 
-  @NotBlank(message = "price cannot be empty")
   @DecimalMin(value = "0.01", message = "price must be greater than zero")
   private BigDecimal price;
 
-  @NotBlank(message = "stock quantity name cannot be empty")
   @PositiveOrZero(message = "stock quantity must be positive or zero")
   private long stockQuantity;
 }
