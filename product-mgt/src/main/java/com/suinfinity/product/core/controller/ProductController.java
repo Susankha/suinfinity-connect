@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestController
 @RequestMapping("/products")
@@ -30,7 +31,8 @@ public class ProductController {
   }
 
   @GetMapping(value = "/get/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
-  private ResponseEntity<ProductResponseDTO> getProduct(@NotBlank @PathVariable String name) {
+  private ResponseEntity<ProductResponseDTO> getProduct(@NotBlank @PathVariable String name)
+      throws NoResourceFoundException {
     return productService.getProduct(name);
   }
 
