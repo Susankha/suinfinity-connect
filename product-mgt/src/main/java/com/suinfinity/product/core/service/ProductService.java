@@ -63,7 +63,15 @@ public class ProductService {
 
   @Transactional
   public ResponseEntity<Void> deleteProduct(String name) {
-    productRepository.deleteByName(name);
+    try {
+      long deletedCount = productRepository.deleteByName(name);
+      if (deletedCount == 0) {
+        log.error("Product '{}' does not exist ", name);
+        throw new RuntimeException("Product " + "'" + name + "'" + "does not exist");
+      }
+    } catch (Exception ex) {
+      throw new RuntimeException("Product " + "'" + name + "'" + " deletion failed");
+    }
     return ResponseEntity.noContent().build();
   }
 }
