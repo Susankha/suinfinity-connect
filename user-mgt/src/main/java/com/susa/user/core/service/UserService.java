@@ -69,8 +69,12 @@ public class UserService {
   @Transactional
   public ResponseEntity<Void> deleteUser(String userName) {
     try {
-      userRepository.deleteByName(userName);
-    } catch (RuntimeException e) {
+      Long deletedCount = userRepository.deleteByName(userName);
+      if (deletedCount == 0) {
+        log.error("User '{}' does not exist ", userName);
+        throw new RuntimeException("User " + "'" + userName + "'" + "does not exist");
+      }
+    } catch (RuntimeException ex) {
       throw new RuntimeException("User " + "'" + userName + "'" + " deletion failed");
     }
     return ResponseEntity.noContent().build();
