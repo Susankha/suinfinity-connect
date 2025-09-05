@@ -2,18 +2,17 @@ package com.suinfinity.product.core.service;
 
 import com.suinfinity.product.core.dto.ProductDTO;
 import com.suinfinity.product.core.dto.ProductResponseDTO;
+import com.suinfinity.product.core.exception.ProductNotFoundException;
 import com.suinfinity.product.core.mapper.ProductMapper;
 import com.suinfinity.product.core.model.Product;
 import com.suinfinity.product.core.repository.ProductRepository;
 import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @Log4j2
 @Service
@@ -34,16 +33,17 @@ public class ProductService {
         .body("product " + productDTO.getName() + " successfully registered");
   }
 
-  public ResponseEntity<ProductResponseDTO> getProduct(String productName)
-      throws NoResourceFoundException {
+  public ResponseEntity<ProductResponseDTO> getProduct(String productName) {
     Product product =
         productRepository
             .findByName(productName)
             .orElseThrow(
                 () -> {
                   log.error("Product '{}' does not exist ", productName);
-                  return new NoResourceFoundException(HttpMethod.GET, productName);
+                  return new ProductNotFoundException(
+                      "Product " + "'" + productName + "'" + " does not exist");
                 });
+
     ProductResponseDTO productResponseDTO = ProductMapper.INSTANCE.toProductResponseDTO(product);
     return ResponseEntity.ok().body(productResponseDTO);
   }
@@ -62,10 +62,11 @@ public class ProductService {
             .findByName(productName)
             .orElseThrow(
                 () -> {
-                  log.error("Product '{}' does not exist ", productName);
-                  return new RuntimeException(
-                      "Product " + "'" + productName + "'" + " does not exist");
+                  log.error("updating failed, product '{}' does not exist", productName);
+                  return new ProductNotFoundException(
+                      "Product updating failed, " + "'" + productName + "'" + " does not exist");
                 });
+
     product.setName(productDTO.getName());
     product.setDescription(productDTO.getDescription());
     product.setPrice(productDTO.getPrice());
@@ -81,15 +82,14 @@ public class ProductService {
 
   @Transactional
   public ResponseEntity<Void> deleteProduct(String name) {
-    try {
-      long deletedCount = productRepository.deleteByName(name);
-      if (deletedCount == 0) {
-        log.error("Product '{}' does not exist ", name);
-        throw new RuntimeException("Product " + "'" + name + "'" + "does not exist");
-      }
-    } catch (Exception ex) {
-      throw new RuntimeException("Product " + "'" + name + "'" + " deletion failed");
+
+    long deletedCount = productRepository.deleteByName(name);
+    if (deletedCount == 0) {
+      log.error("Deleting failed, Product '{}' does not exist", name);
+      throw new ProductNotFoundException(
+          "Product deleting failed, " + "'" + name + "'" + " does not exist");
     }
+
     return ResponseEntity.noContent().build();
   }
 }

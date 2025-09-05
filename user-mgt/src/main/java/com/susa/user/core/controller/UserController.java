@@ -31,8 +31,7 @@ public class UserController {
   }
 
   @GetMapping(value = "/get/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<UserResponseDTO> getUser(@NotBlank @PathVariable String name)
-      throws Exception {
+  public ResponseEntity<UserResponseDTO> getUser(@NotBlank @PathVariable String name) {
     return userService.getUser(name);
   }
 
