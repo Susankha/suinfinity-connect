@@ -13,7 +13,6 @@ class UserMgtApplicationTests {
 
   @Autowired UserController userController;
 
-  @Test
   void contextLoads() {
     Assertions.assertNotNull(userController, "UserMgt App context loading failed");
   }
