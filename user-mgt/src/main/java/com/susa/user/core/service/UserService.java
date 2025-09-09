@@ -58,7 +58,7 @@ public class UserService {
     return ResponseEntity.ok().body(userResponseDTOS);
   }
 
-  public ResponseEntity<User> updateUser(String userName, UserDTO userDTO) {
+  public ResponseEntity<UserResponseDTO> updateUser(String userName, UserDTO userDTO) {
     User user =
         userRepository
             .findByName(userName)
@@ -76,7 +76,8 @@ public class UserService {
     } catch (RuntimeException e) {
       throw new RuntimeException("User " + "'" + userName + "'" + " update failed");
     }
-    return ResponseEntity.ok().body(user);
+    UserResponseDTO userResponseDTO = UserMapper.INSTANCE.toUserResponseDto(user);
+    return ResponseEntity.ok().body(userResponseDTO);
   }
 
   @Transactional
