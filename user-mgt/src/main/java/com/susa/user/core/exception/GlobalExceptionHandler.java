@@ -55,7 +55,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
   }
 
   @ExceptionHandler(UserNotFoundException.class)
-  protected ResponseEntity<Object> handleProductNotFoundException(
+  protected ResponseEntity<Object> handleUserNotFoundExceptionException(
       UserNotFoundException ex, WebRequest request) {
     String errorMessage = ex.getMessage();
     ErrorResponse errorResponse =
