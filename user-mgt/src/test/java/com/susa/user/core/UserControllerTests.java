@@ -29,6 +29,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 public class UserControllerTests {
 
   private static final String TEST_USER = "test_user";
+  private static final String NEW_TEST_USER = "new_test_user";
   @MockitoBean UserService userService;
   @Autowired MockMvc mockMvc;
 
@@ -73,16 +74,20 @@ public class UserControllerTests {
   @Test
   public void updateUser_shouldReturns_updatedUser() throws Exception {
     UserDTO userDTO = new UserDTO(TEST_USER, getAddress());
-    User user = UserMapper.INSTANCE.toUser(userDTO);
     String payload = getJsonPayload(userDTO);
-    Mockito.when(userService.updateUser("new_test_user", userDTO))
-        .thenReturn(ResponseEntity.ok().body(user));
+    User user = UserMapper.INSTANCE.toUser(userDTO);
+    user.setName(NEW_TEST_USER);
+    user.setAddress(userDTO.getAddress());
+    UserResponseDTO userResponseDTO = UserMapper.INSTANCE.toUserResponseDto(user);
+    Mockito.when(userService.updateUser(NEW_TEST_USER, userDTO))
+        .thenReturn(ResponseEntity.ok().body(userResponseDTO));
     mockMvc
         .perform(
             MockMvcRequestBuilders.put("/users/update/{user}", user.getName())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(payload))
-        .andExpect(MockMvcResultMatchers.status().isOk());
+        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.startsWith("new_test")));
   }
 
   @Test

@@ -2,7 +2,6 @@ package com.susa.user.core.controller;
 
 import com.susa.user.core.dto.UserDTO;
 import com.susa.user.core.dto.UserResponseDTO;
-import com.susa.user.core.model.User;
 import com.susa.user.core.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -41,7 +40,7 @@ public class UserController {
   }
 
   @PutMapping(value = "/update/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<User> updateUser(
+  public ResponseEntity<UserResponseDTO> updateUser(
       @NotBlank @PathVariable String name, @Valid @RequestBody UserDTO user) {
     return userService.updateUser(name, user);
   }
