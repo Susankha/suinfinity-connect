@@ -13,6 +13,7 @@
   <modules>
     <module>../product-mgt</module>
     <module>../user-mgt</module>
+    <module>../order-mgt</module>
   </modules>
   <dependencyManagement>
     <dependencies>
