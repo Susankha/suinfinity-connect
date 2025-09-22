@@ -7,7 +7,6 @@
     <groupId>org.susa</groupId>
     <artifactId>suinfinity</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <relativePath/>
   </parent>
   <groupId>com.susa</groupId>
   <artifactId>order-mgt</artifactId>
