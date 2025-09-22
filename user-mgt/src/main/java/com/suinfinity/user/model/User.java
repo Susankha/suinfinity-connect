@@ -1,7 +1,5 @@
 package com.suinfinity.user.model;
 
-// import com.suinfinity.order.model.Order;
-// import com.suinfinity.order.model.Order;
 import com.suinfinity.user.dto.UserDTO.Address;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
