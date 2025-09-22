@@ -77,18 +77,6 @@
       <artifactId>mapstruct</artifactId>
       <version>${org.mapstruct.version}</version>
     </dependency>
-<!--    <dependency>-->
-<!--      <groupId>com.susa</groupId>-->
-<!--      <artifactId>order-mgt</artifactId>-->
-<!--      <version>0.0.1-SNAPSHOT</version>-->
-<!--      <scope>compile</scope>-->
-<!--    </dependency>-->
-    <!--    <dependency>-->
-<!--      <groupId>com.susa</groupId>-->
-<!--      <artifactId>order-mgt</artifactId>-->
-<!--      <version>0.0.1-SNAPSHOT</version>-->
-<!--      <scope>compile</scope>-->
-<!--    </dependency>-->
   </dependencies>
 
   <build>
