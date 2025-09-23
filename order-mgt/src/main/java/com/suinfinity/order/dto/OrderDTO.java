@@ -2,27 +2,24 @@ package com.suinfinity.order.dto;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
+import lombok.Data;
 
+@Data
 public class OrderDTO {
 
-  private Date orderDate;
+  private LocalDateTime orderDate;
   private BigDecimal amount;
-  private long user_id;
+  private long userid;
 
-  public OrderDTO(BigDecimal amount, long user_id) {
-    this.orderDate = Date.from(Instant.parse(getTimeStamp()));
+  public OrderDTO(BigDecimal amount, String userid) {
+    this.orderDate = getTimeStamp();
     this.amount = amount;
-    this.user_id = user_id;
+    this.userid = Long.parseLong(userid);
   }
 
-  private String getTimeStamp() {
-    DateTimeFormatter dateTimeFormatter =
-        DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss a 'UTC'");
-
-    return Instant.now().atZone(ZoneOffset.UTC).format(dateTimeFormatter);
+  private LocalDateTime getTimeStamp() {
+    return Instant.now().atZone(ZoneOffset.UTC).toLocalDateTime();
   }
 }
