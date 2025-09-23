@@ -29,5 +29,6 @@ public class Order {
   @Column(scale = 2)
   private BigDecimal amount;
 
-  private long user_id;
+  @Column(name = "user_id")
+  private long userid;
 }
