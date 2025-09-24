@@ -1,14 +1,21 @@
 package com.suinfinity.order.service;
 
 import com.suinfinity.order.dto.OrderDTO;
+import com.suinfinity.order.dto.OrderResponseDTO;
+import com.suinfinity.order.exception.OrderNotFoundException;
 import com.suinfinity.order.mapper.OrderMapper;
 import com.suinfinity.order.model.Order;
 import com.suinfinity.order.repository.OrderRepository;
+import java.sql.Date;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @Log4j2
 @Service
@@ -19,6 +26,56 @@ public class OrderService {
   public ResponseEntity<?> placeOrder(OrderDTO orderDTO) {
     Order order = OrderMapper.INSTANCE.toOrder(orderDTO);
     orderRepository.save(order);
-    return ResponseEntity.status(HttpStatus.CREATED).body("Order " + " successfully registered");
+    return ResponseEntity.status(HttpStatus.CREATED).body("Order " + " successfully placed");
+  }
+
+  public ResponseEntity<OrderResponseDTO> getOrder(long orderId) {
+    Order order =
+        orderRepository
+            .findById(orderId)
+            .orElseThrow(
+                () -> {
+                  log.error("Order '{}' does not exist ", orderId);
+                  return new OrderNotFoundException(
+                      "Order " + "'" + orderId + "'" + " does not exist");
+                });
+    OrderResponseDTO orderResponseDTO = OrderMapper.INSTANCE.toOrderResponseDTO(order);
+    return ResponseEntity.ok(orderResponseDTO);
+  }
+
+  public ResponseEntity<List<OrderResponseDTO>> getOrders() {
+    List<Order> orders = orderRepository.findAll();
+    List<OrderResponseDTO> orderResponseDTOS =
+        orders.stream().map(OrderMapper.INSTANCE::toOrderResponseDTO).toList();
+    if (orders.isEmpty()) {
+      return ResponseEntity.noContent().build();
+    }
+    return ResponseEntity.ok(orderResponseDTOS);
+  }
+
+  public ResponseEntity<OrderResponseDTO> updateOrder(long orderId, OrderDTO orderDTO) {
+    Order order =
+        orderRepository
+            .findById(orderId)
+            .orElseThrow(
+                () -> {
+                  log.error("Order '{}' does not exist, update operation failed ", orderId);
+                  return new OrderNotFoundException(
+                      "Update operation failed, Order " + "'" + orderId + "'" + " does not exist");
+                });
+    orderDTO.setOrderDate(Instant.now().atZone(ZoneOffset.UTC).toLocalDateTime());
+    order.setAmount(orderDTO.getAmount());
+    try {
+      orderRepository.save(order);
+    } catch (RuntimeException e) {
+      throw new RuntimeException("Order " + "'" + orderId + "'" + " update failed");
+    }
+    OrderResponseDTO orderResponseDTO = OrderMapper.INSTANCE.toOrderResponseDTO(order);
+    return ResponseEntity.ok(orderResponseDTO);
+  }
+
+  public ResponseEntity<Void> deleteOrder(long orderId) {
+    orderRepository.deleteById(orderId);
+    return ResponseEntity.noContent().build();
   }
 }
