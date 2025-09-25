@@ -3,6 +3,9 @@ package com.suinfinity.order.controller;
 import com.suinfinity.order.dto.OrderDTO;
 import com.suinfinity.order.dto.OrderResponseDTO;
 import com.suinfinity.order.service.OrderService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -23,12 +26,12 @@ public class OrderController {
   @Autowired private OrderService orderService;
 
   @PostMapping(value = "/new", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<?> placeOrder(@RequestBody OrderDTO orderDTO) {
+  public ResponseEntity<?> placeOrder(@Valid @RequestBody OrderDTO orderDTO) {
     return orderService.placeOrder(orderDTO);
   }
 
   @GetMapping(value = "/get/{orderId}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<OrderResponseDTO> getOrder(@PathVariable long orderId) {
+  public ResponseEntity<OrderResponseDTO> getOrder(@NotNull @PathVariable long orderId) {
     return orderService.getOrder(orderId);
   }
 
@@ -39,12 +42,12 @@ public class OrderController {
 
   @PutMapping(value = "/update/{orderId}", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<OrderResponseDTO> updateOrder(
-      @PathVariable long orderId, @RequestBody OrderDTO orderDTO) {
+      @NotNull @PathVariable long orderId, @RequestBody OrderDTO orderDTO) {
     return orderService.updateOrder(orderId, orderDTO);
   }
 
   @DeleteMapping(value = "/delete/{orderId}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<?> deleteOrder(@PathVariable long orderId) {
+  public ResponseEntity<?> deleteOrder(@NotNull @PathVariable long orderId) {
     return orderService.deleteOrder(orderId);
   }
 }

@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @Log4j2
@@ -25,7 +26,12 @@ public class OrderService {
 
   public ResponseEntity<?> placeOrder(OrderDTO orderDTO) {
     Order order = OrderMapper.INSTANCE.toOrder(orderDTO);
-    orderRepository.save(order);
+    try {
+      orderRepository.save(order);
+    } catch (RuntimeException e) {
+      log.error("Order {} placement failed ", order.getOrderId());
+      throw new RuntimeException("Order " + "'" + order.getOrderId() + "'" + " placement failed");
+    }
     return ResponseEntity.status(HttpStatus.CREATED).body("Order " + " successfully placed");
   }
 
@@ -48,6 +54,7 @@ public class OrderService {
     List<OrderResponseDTO> orderResponseDTOS =
         orders.stream().map(OrderMapper.INSTANCE::toOrderResponseDTO).toList();
     if (orders.isEmpty()) {
+      log.info("Orders are empty");
       return ResponseEntity.noContent().build();
     }
     return ResponseEntity.ok(orderResponseDTOS);
@@ -74,6 +81,7 @@ public class OrderService {
     return ResponseEntity.ok(orderResponseDTO);
   }
 
+  @Transactional
   public ResponseEntity<Void> deleteOrder(long orderId) {
     orderRepository.deleteById(orderId);
     return ResponseEntity.noContent().build();
