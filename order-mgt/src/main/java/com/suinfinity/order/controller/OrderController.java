@@ -4,7 +4,6 @@ import com.suinfinity.order.dto.OrderDTO;
 import com.suinfinity.order.dto.OrderResponseDTO;
 import com.suinfinity.order.service.OrderService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
