@@ -23,8 +23,8 @@ public class OrderDTO {
   @DecimalMin(value = "0.01", message = "Order amount must be greater than zero")
   private BigDecimal amount;
 
-  @NotNull(message = "User ID cannot be empty")
-  @Positive(message = "User ID must be a positive number")
+  @NotNull(message = "User id cannot be empty")
+  @Positive(message = "User id must be a positive number")
   private long userid;
 
   public OrderDTO(BigDecimal amount, String userid) {

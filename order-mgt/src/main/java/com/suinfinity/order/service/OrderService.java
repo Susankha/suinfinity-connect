@@ -6,7 +6,6 @@ import com.suinfinity.order.exception.OrderNotFoundException;
 import com.suinfinity.order.mapper.OrderMapper;
 import com.suinfinity.order.model.Order;
 import com.suinfinity.order.repository.OrderRepository;
-import java.sql.Date;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -16,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @Log4j2
 @Service
