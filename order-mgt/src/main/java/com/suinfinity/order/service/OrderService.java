@@ -1,14 +1,22 @@
 package com.suinfinity.order.service;
 
 import com.suinfinity.order.dto.OrderDTO;
+import com.suinfinity.order.dto.OrderItemDTO;
 import com.suinfinity.order.dto.OrderResponseDTO;
 import com.suinfinity.order.exception.OrderNotFoundException;
+import com.suinfinity.order.mapper.OrderItemMapper;
 import com.suinfinity.order.mapper.OrderMapper;
 import com.suinfinity.order.model.Order;
+import com.suinfinity.order.model.OrderItem;
+import com.suinfinity.order.repository.OrderItemRepository;
 import com.suinfinity.order.repository.OrderRepository;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,9 +29,19 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderService {
 
   @Autowired private OrderRepository orderRepository;
+  @Autowired private OrderItemRepository orderItemRepository;
 
   public ResponseEntity<?> placeOrder(OrderDTO orderDTO) {
     Order order = OrderMapper.INSTANCE.toOrder(orderDTO);
+    List<Map<String,String>> orderItems = orderDTO.getOrderItems();
+    for (Map<String,String> orderItemMap : orderItems) {
+      Set<?> keys = orderItemMap.keySet();
+      Set<Entry<String, String>> entries = orderItemMap.entrySet();
+
+//      OrderItemDTO orderItemDTO = orderItemMap.get("");
+//      OrderItem orderItem = OrderItemMapper.INSTANCE.toOrderItem(orderItemDTO);
+//      orderItemRepository.save(orderItem);
+    }
     try {
       orderRepository.save(order);
     } catch (RuntimeException e) {

@@ -8,6 +8,9 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import lombok.Data;
 
 @Data
@@ -27,10 +30,13 @@ public class OrderDTO {
   @Positive(message = "User id must be a positive number")
   private long userid;
 
-  public OrderDTO(BigDecimal amount, String userid) {
+  private List<Map<String,String>> orderItems;
+
+  public OrderDTO(BigDecimal amount, String userid, List<Map<String,String> > orderItems) {
     this.orderDate = getTimeStamp();
     this.amount = amount;
     this.userid = Long.parseLong(userid);
+    this.orderItems = orderItems;
   }
 
   private LocalDateTime getTimeStamp() {
