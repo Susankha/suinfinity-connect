@@ -10,13 +10,12 @@ import com.suinfinity.order.model.Order;
 import com.suinfinity.order.model.OrderItem;
 import com.suinfinity.order.repository.OrderItemRepository;
 import com.suinfinity.order.repository.OrderRepository;
+import com.suinfinity.order.util.OrderUtil;
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,14 +32,12 @@ public class OrderService {
 
   public ResponseEntity<?> placeOrder(OrderDTO orderDTO) {
     Order order = OrderMapper.INSTANCE.toOrder(orderDTO);
-    List<Map<String,String>> orderItems = orderDTO.getOrderItems();
-    for (Map<String,String> orderItemMap : orderItems) {
-      Set<?> keys = orderItemMap.keySet();
-      Set<Entry<String, String>> entries = orderItemMap.entrySet();
-
-//      OrderItemDTO orderItemDTO = orderItemMap.get("");
-//      OrderItem orderItem = OrderItemMapper.INSTANCE.toOrderItem(orderItemDTO);
-//      orderItemRepository.save(orderItem);
+    List<Map<String, String>> orderItems = orderDTO.getOrderItems();
+    for (Map<String, String> orderItemMap : orderItems) {
+      OrderItemDTO orderItemDTO = OrderUtil.getOrderItemDTO(orderItemMap);
+      OrderItem orderItem = OrderItemMapper.INSTANCE.toOrderItem(orderItemDTO);
+      orderItem.setOrderId(order.getOrderId());
+      orderItemRepository.save(orderItem);
     }
     try {
       orderRepository.save(order);
