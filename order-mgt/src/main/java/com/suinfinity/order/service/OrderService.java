@@ -13,7 +13,9 @@ import com.suinfinity.order.repository.OrderRepository;
 import com.suinfinity.order.util.OrderUtil;
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,14 +34,14 @@ public class OrderService {
   public ResponseEntity<?> placeOrder(OrderDTO orderDTO) {
     Order order = OrderMapper.INSTANCE.toOrder(orderDTO);
     List<Map<String, String>> orderItems = orderDTO.getOrderItems();
-    for (Map<String, String> orderItemMap : orderItems) {
-      OrderItemDTO orderItemDTO = OrderUtil.getOrderItemDTO(orderItemMap);
-      OrderItem orderItem = OrderItemMapper.INSTANCE.toOrderItem(orderItemDTO);
-      orderItem.setOrderId(order.getOrderId());
-      orderItemRepository.save(orderItem);
-    }
     try {
       orderRepository.save(order);
+      for (Map<String, String> orderItemMap : orderItems) {
+        OrderItemDTO orderItemDTO = OrderUtil.getOrderItemDTO(orderItemMap);
+        OrderItem orderItem = OrderItemMapper.INSTANCE.toOrderItem(orderItemDTO);
+        orderItem.setOrderId(order.getOrderId());
+        orderItemRepository.save(orderItem);
+      }
     } catch (RuntimeException e) {
       log.error("Order {} placement failed ", order.getOrderId());
       throw new RuntimeException("Order " + "'" + order.getOrderId() + "'" + " placement failed");
@@ -57,7 +59,17 @@ public class OrderService {
                   return new OrderNotFoundException(
                       "Order " + "'" + orderId + "'" + " does not exist");
                 });
+    List<OrderItem> orderItemList = orderItemRepository.findByOrderId(orderId);
+    ListIterator<OrderItem> listIterator = orderItemList.listIterator();
+    List<Map<String, String>> orderItemDTOS = new ArrayList<>();
+    while (listIterator.hasNext()) {
+      OrderItem orderItem = listIterator.next();
+      OrderItemDTO orderItemDTO = OrderItemMapper.INSTANCE.toOrderItemDTO(orderItem);
+      Map<String, String> orderItems = OrderUtil.setOrderItemDTO(orderItemDTO);
+      orderItemDTOS.add(orderItems);
+    }
     OrderResponseDTO orderResponseDTO = OrderMapper.INSTANCE.toOrderResponseDTO(order);
+    orderResponseDTO.setOrderItems(orderItemDTOS);
     return ResponseEntity.ok(orderResponseDTO);
   }
 

@@ -2,6 +2,7 @@ package com.suinfinity.order.util;
 
 import com.suinfinity.order.dto.OrderItemDTO;
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Map;
 
 public class OrderUtil {
@@ -17,5 +18,13 @@ public class OrderUtil {
         new OrderItemDTO(
             Long.parseLong(productId), new BigDecimal(price), Long.parseLong(quantity));
     return orderItemDTO;
+  }
+
+  public static Map<String, String> setOrderItemDTO(OrderItemDTO orderItemDTO) {
+    Map<String, String> orderItemMap = new HashMap<>();
+    orderItemMap.put(PRODUCT_ID, String.valueOf(orderItemDTO.getProductId()));
+    orderItemMap.put(PRICE, String.valueOf(orderItemDTO.getPrice()));
+    orderItemMap.put(QUANTITY, String.valueOf(orderItemDTO.getQuantity()));
+    return orderItemMap;
   }
 }
