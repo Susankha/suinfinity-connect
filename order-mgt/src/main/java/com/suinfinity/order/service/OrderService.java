@@ -14,6 +14,7 @@ import com.suinfinity.order.util.OrderUtil;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -60,14 +61,7 @@ public class OrderService {
                       "Order " + "'" + orderId + "'" + " does not exist");
                 });
     List<OrderItem> orderItemList = orderItemRepository.findByOrderId(orderId);
-    ListIterator<OrderItem> listIterator = orderItemList.listIterator();
-    List<Map<String, String>> orderItemDTOS = new ArrayList<>();
-    while (listIterator.hasNext()) {
-      OrderItem orderItem = listIterator.next();
-      OrderItemDTO orderItemDTO = OrderItemMapper.INSTANCE.toOrderItemDTO(orderItem);
-      Map<String, String> orderItems = OrderUtil.setOrderItemDTO(orderItemDTO);
-      orderItemDTOS.add(orderItems);
-    }
+    List<Map<String, String>> orderItemDTOS = this.getOrderItems(orderItemList);
     OrderResponseDTO orderResponseDTO = OrderMapper.INSTANCE.toOrderResponseDTO(order);
     orderResponseDTO.setOrderItems(orderItemDTOS);
     return ResponseEntity.ok(orderResponseDTO);
@@ -75,8 +69,20 @@ public class OrderService {
 
   public ResponseEntity<List<OrderResponseDTO>> getOrders() {
     List<Order> orders = orderRepository.findAll();
+    ListIterator<Order> listIterator = orders.listIterator();
+    Map<Long, List<Map<String, String>>> orderItemDTOSMap = new HashMap<>();
+    while (listIterator.hasNext()) {
+      Order order = listIterator.next();
+      long orderId = order.getOrderId();
+      List<OrderItem> orderItemList = orderItemRepository.findByOrderId(orderId);
+      List<Map<String, String>> orderItemDTOS = this.getOrderItems(orderItemList);
+      orderItemDTOSMap.put(orderId, orderItemDTOS);
+    }
     List<OrderResponseDTO> orderResponseDTOS =
         orders.stream().map(OrderMapper.INSTANCE::toOrderResponseDTO).toList();
+    for (OrderResponseDTO orderResponseDTO : orderResponseDTOS) {
+      orderResponseDTO.setOrderItems(orderItemDTOSMap.get(orderResponseDTO.getOrderId()));
+    }
     if (orders.isEmpty()) {
       log.info("Orders are empty");
       return ResponseEntity.noContent().build();
@@ -107,7 +113,20 @@ public class OrderService {
 
   @Transactional
   public ResponseEntity<Void> deleteOrder(long orderId) {
+    orderItemRepository.deleteByOrderId(orderId);
     orderRepository.deleteById(orderId);
     return ResponseEntity.noContent().build();
+  }
+
+  private List<Map<String, String>> getOrderItems(List<OrderItem> orderItemList) {
+    ListIterator<OrderItem> listIterator = orderItemList.listIterator();
+    List<Map<String, String>> orderItemDTOS = new ArrayList<>();
+    while (listIterator.hasNext()) {
+      OrderItem orderItem = listIterator.next();
+      OrderItemDTO orderItemDTO = OrderItemMapper.INSTANCE.toOrderItemDTO(orderItem);
+      Map<String, String> orderItems = OrderUtil.setOrderItemDTO(orderItemDTO);
+      orderItemDTOS.add(orderItems);
+    }
+    return orderItemDTOS;
   }
 }
