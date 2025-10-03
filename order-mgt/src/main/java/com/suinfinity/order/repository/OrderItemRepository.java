@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
 
   List<OrderItem> findByOrderId(Long orderId);
+
+  Long deleteByOrderId(Long orderId);
 }
