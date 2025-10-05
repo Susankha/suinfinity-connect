@@ -1,6 +1,7 @@
 package com.suinfinity.order.mapper;
 
 import com.suinfinity.order.dto.OrderItemDTO;
+import com.suinfinity.order.dto.OrderItemResponseDTO;
 import com.suinfinity.order.model.OrderItem;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants.ComponentModel;
@@ -13,5 +14,5 @@ public interface OrderItemMapper {
 
   OrderItem toOrderItem(OrderItemDTO orderItemDTO);
 
-  OrderItemDTO toOrderItemDTO(OrderItem orderItem);
+  OrderItemResponseDTO toOrderItemDTO(OrderItem orderItem);
 }
