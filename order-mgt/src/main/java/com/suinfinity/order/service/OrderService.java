@@ -98,7 +98,6 @@ public class OrderService {
                   return new OrderNotFoundException(
                       "Update operation failed, Order " + "'" + orderId + "'" + " does not exist");
                 });
-    Order exsisOrder = new Order();
     List<OrderItemDTO> orderItemDTOS = new ArrayList<>();
     for (Map<String, String> orderItemMap : orderDTO.getOrderItems()) {
       orderItemDTOS.add(OrderUtil.getOrderItemDTO(orderItemMap));
@@ -119,7 +118,9 @@ public class OrderService {
     order.setAmount(orderDTO.getAmount());
     orderRepository.save(order);
     log.info("Order updated successfully");
-    OrderResponseDTO orderResponseDTO = OrderMapper.INSTANCE.toOrderResponseDTO(exsisOrder);
+    List<Map<String, String>> updatedOrderItems = getOrderItems(exsistOrderItemList);
+    OrderResponseDTO orderResponseDTO = OrderMapper.INSTANCE.toOrderResponseDTO(order);
+    orderResponseDTO.setOrderItems(updatedOrderItems);
     return ResponseEntity.ok(orderResponseDTO);
   }
 
