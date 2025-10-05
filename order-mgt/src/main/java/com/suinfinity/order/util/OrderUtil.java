@@ -1,6 +1,7 @@
 package com.suinfinity.order.util;
 
 import com.suinfinity.order.dto.OrderItemDTO;
+import com.suinfinity.order.dto.OrderItemResponseDTO;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,11 +21,11 @@ public class OrderUtil {
     return orderItemDTO;
   }
 
-  public static Map<String, String> setOrderItemDTO(OrderItemDTO orderItemDTO) {
+  public static Map<String, String> setOrderItemDTO(OrderItemResponseDTO orderItemResponseDTO) {
     Map<String, String> orderItemMap = new HashMap<>();
-    orderItemMap.put(PRODUCT_ID, String.valueOf(orderItemDTO.getProductId()));
-    orderItemMap.put(PRICE, String.valueOf(orderItemDTO.getPrice()));
-    orderItemMap.put(QUANTITY, String.valueOf(orderItemDTO.getQuantity()));
+    orderItemMap.put(PRODUCT_ID, String.valueOf(orderItemResponseDTO.getProductId()));
+    orderItemMap.put(PRICE, String.valueOf(orderItemResponseDTO.getPrice()));
+    orderItemMap.put(QUANTITY, String.valueOf(orderItemResponseDTO.getQuantity()));
     return orderItemMap;
   }
 }
