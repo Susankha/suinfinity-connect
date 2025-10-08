@@ -14,39 +14,41 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/orders")
+@RequestMapping("/v1/orders")
 public class OrderController {
 
   @Autowired private OrderService orderService;
 
-  @PostMapping(value = "/new", produces = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> placeOrder(@Valid @RequestBody OrderDTO orderDTO) {
     return orderService.placeOrder(orderDTO);
   }
 
-  @GetMapping(value = "/get/{orderId}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<OrderResponseDTO> getOrder(@NotNull @PathVariable long orderId) {
+  @GetMapping(value = "/{order-id}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<OrderResponseDTO> getOrder(
+      @NotNull @PathVariable("order-id") long orderId) {
     return orderService.getOrder(orderId);
   }
 
-  @GetMapping(value = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<OrderResponseDTO>> getOrders() {
     return orderService.getOrders();
   }
 
-  @PatchMapping(value = "/update/{orderId}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @PutMapping(value = "/{order-id}", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<OrderResponseDTO> updateOrder(
-      @NotNull @PathVariable long orderId, @RequestBody OrderDTO orderDTO) {
+      @NotNull @PathVariable("order-id") long orderId, @RequestBody OrderDTO orderDTO) {
     return orderService.updateOrder(orderId, orderDTO);
   }
 
-  @DeleteMapping(value = "/delete/{orderId}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<?> deleteOrder(@NotNull @PathVariable long orderId) {
+  @DeleteMapping(value = "/{order-id}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> deleteOrder(@NotNull @PathVariable("order-id") long orderId) {
     return orderService.deleteOrder(orderId);
   }
 }
