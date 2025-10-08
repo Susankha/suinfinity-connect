@@ -1,5 +1,6 @@
 package com.suinfinity.order.repository;
 
+import com.suinfinity.order.exception.OrderNotFoundException;
 import com.suinfinity.order.model.OrderItem;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,7 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
 
-  List<OrderItem> findByOrderId(Long orderId);
+  List<OrderItem> findByOrderId(Long orderId) throws OrderNotFoundException;
 
-  Long deleteByOrderId(Long orderId);
+  Long deleteByOrderId(Long orderId) throws OrderNotFoundException;
 }

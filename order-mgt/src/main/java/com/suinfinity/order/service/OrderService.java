@@ -17,6 +17,7 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -66,11 +67,11 @@ public class OrderService {
 
   public ResponseEntity<List<OrderResponseDTO>> getOrders() {
     List<Order> orders = orderRepository.findAll();
-    ListIterator<Order> listIterator = orders.listIterator();
+    Iterator<Order> orderIterator = orders.iterator();
     Map<Long, List<Map<String, String>>> orderItemDTOSMap = new HashMap<>();
 
-    while (listIterator.hasNext()) {
-      Order order = listIterator.next();
+    while (orderIterator.hasNext()) {
+      Order order = orderIterator.next();
       long orderId = order.getOrderId();
       List<OrderItem> orderItemList = orderItemRepository.findByOrderId(orderId);
       List<Map<String, String>> orderItemDTOS = this.getOrderItems(orderItemList);
@@ -96,29 +97,34 @@ public class OrderService {
                 () -> {
                   log.error("Order '{}' does not exist, update operation failed ", orderId);
                   return new OrderNotFoundException(
-                      "Update operation failed, Order " + "'" + orderId + "'" + " does not exist");
+                      "Update operation failed, order " + "'" + orderId + "'" + " does not exists");
                 });
     List<OrderItemDTO> orderItemDTOS = new ArrayList<>();
     for (Map<String, String> orderItemMap : orderDTO.getOrderItems()) {
       orderItemDTOS.add(OrderUtil.getOrderItemDTO(orderItemMap));
     }
-
-    List<OrderItem> exsistOrderItemList = orderItemRepository.findByOrderId(orderId);
-    for (int i = 0; i < exsistOrderItemList.size(); i++) {
-      OrderItem item = exsistOrderItemList.get(i);
-      OrderItemDTO orderItemDTO = orderItemDTOS.get(i);
-      item.setProductId(orderItemDTO.getProductId());
-      item.setPrice(orderItemDTO.getPrice());
-      item.setQuantity(orderItemDTO.getQuantity());
-      orderItemRepository.save(item);
-    }
     Date updatedDate =
         Date.from(Instant.now().atZone(ZoneOffset.UTC).toLocalDateTime().toInstant(ZoneOffset.UTC));
     order.setOrderDate(updatedDate);
     order.setAmount(orderDTO.getAmount());
+    List<Map<String, String>> updatedOrderItems;
+    try {
+      List<OrderItem> exsistOrderItemList = orderItemRepository.findByOrderId(orderId);
+      for (int i = 0; i < exsistOrderItemList.size(); i++) {
+        OrderItem item = exsistOrderItemList.get(i);
+        OrderItemDTO orderItemDTO = orderItemDTOS.get(i);
+        item.setProductId(orderItemDTO.getProductId());
+        item.setPrice(orderItemDTO.getPrice());
+        item.setQuantity(orderItemDTO.getQuantity());
+        orderItemRepository.save(item);
+      }
+      updatedOrderItems = getOrderItems(exsistOrderItemList);
+    } catch (OrderNotFoundException ex) {
+      throw new RuntimeException(
+          "Update operation failed, order " + "'" + orderId + "'" + " does not exists");
+    }
     orderRepository.save(order);
     log.info("Order updated successfully");
-    List<Map<String, String>> updatedOrderItems = getOrderItems(exsistOrderItemList);
     OrderResponseDTO orderResponseDTO = OrderMapper.INSTANCE.toOrderResponseDTO(order);
     orderResponseDTO.setOrderItems(updatedOrderItems);
     return ResponseEntity.ok(orderResponseDTO);
@@ -126,14 +132,16 @@ public class OrderService {
 
   @Transactional
   public ResponseEntity<Void> deleteOrder(long orderId) {
-    long orderCount = orderRepository.deleteByOrderId(orderId);
-    if (orderCount == 0) {
+    try {
+      orderRepository.deleteByOrderId(orderId);
+      log.info("Deleted order with order id: '{}' :", orderId);
+      long itemCount = orderItemRepository.deleteByOrderId(orderId);
+      log.info("Deleted order item count is: '{}' :", itemCount);
+    } catch (OrderNotFoundException ex) {
       log.error("Order id '{}' does not exist, delete operation failed", orderId);
       throw new RuntimeException(
-          "Delete operation failed, order id:" + "'" + orderId + "'" + " does not exist");
+          "Delete operation failed, Order " + "'" + orderId + "'" + " does not exists");
     }
-    long itemCount = orderItemRepository.deleteByOrderId(orderId);
-    log.info("Deleted order item count is: '{}' :", itemCount);
     return ResponseEntity.noContent().build();
   }
 
