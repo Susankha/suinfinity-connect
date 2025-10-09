@@ -1,9 +1,14 @@
 package com.suinfinity.order;
 
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.suinfinity.order.dto.OrderDTO;
+import com.suinfinity.order.dto.OrderResponseDTO;
+import com.suinfinity.order.mapper.OrderMapper;
 import com.suinfinity.order.model.Order;
 import com.suinfinity.order.service.OrderService;
 import java.math.BigDecimal;
@@ -36,7 +41,7 @@ public class OrderControllerTests {
   private static final String USER_ID = "80";
   private static final String PRODUCT_ID = "productId";
   private static final String PRODUCT_ID_VALUE = "12";
-  private static final String PRICE = "25.price";
+  private static final String PRICE = "price";
   private static final String PRICE_VALUE = "25.30";
   private static final String QUANTITY = "quantity";
   private static final String QUANTITY_VALUE = "20";
@@ -51,7 +56,6 @@ public class OrderControllerTests {
     String jsonRequest = getJsonPayload(orderDTO);
     Mockito.when(orderService.placeOrder(orderDTO))
         .thenReturn(new ResponseEntity<>(HttpStatus.CREATED));
-
     mockMvc
         .perform(
             MockMvcRequestBuilders.post("/v1/orders")
@@ -60,8 +64,23 @@ public class OrderControllerTests {
         .andExpect(MockMvcResultMatchers.status().isCreated());
   }
 
+  @Test
+  @DisplayName("GetOrder operation test")
+  public void getOrder_shouldReturns_Order() throws Exception {
+    Order order = getOrder();
+    OrderResponseDTO orderResponseDTO = OrderMapper.INSTANCE.toOrderResponseDTO(order);
+    orderResponseDTO.setOrderItems(getOrderItems());
+    Mockito.when(orderService.getOrder(order.getOrderId()))
+        .thenReturn(ResponseEntity.ok().body(orderResponseDTO));
+    mockMvc
+        .perform(MockMvcRequestBuilders.get("/v1/orders/{order-id}", order.getOrderId()))
+        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(jsonPath("$.amount", greaterThanOrEqualTo(1)))
+        .andExpect(jsonPath("$.orderItems", hasSize(1)));
+  }
+
   private OrderDTO getOrderDTO() {
-    return new OrderDTO(ORDER_AMOUNT, USER_ID, this.getOrderItems());
+    return new OrderDTO(ORDER_AMOUNT, USER_ID, getOrderItems());
   }
 
   private Order getOrder() {
