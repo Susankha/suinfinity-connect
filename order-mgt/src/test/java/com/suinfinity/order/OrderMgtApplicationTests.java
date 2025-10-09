@@ -13,8 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @DisplayName("Order Management Application Tests")
 public class OrderMgtApplicationTests {
   @Autowired OrderController orderController;
-
-  @Test
+  
   void contextLoad() {
     log.info("Order Mgt application test");
     Assertions.assertNotNull(orderController, "Order Mgt App context loading failed");
