@@ -29,8 +29,12 @@ jobs:
           cache: maven
       - name: Build suinfinity core with Maven
         run: mvn -B package --file suinfinity/pom.xml
-      - name: Build user-mgt with Maven
-        run: mvn -B package --file user-mgt/pom.xml -DskipTests
+      #- name: Build user-mgt with Maven
+       # run: mvn -B package --file user-mgt/pom.xml -DskipTests
+     # - name: Build product-mgt with Maven
+      #  run: mvn -B package --file product-mgt/pom.xml -DskipTests
+     # - name: Build order-mgt with Maven
+      #  run: mvn -B package --file order-mgt/pom.xml -DskipTests
 
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     #- name: Update dependency graph
