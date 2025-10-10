@@ -124,6 +124,16 @@ public class OrderControllerTests {
         .andExpect(jsonPath("$.orderItems", hasSize(1)));
   }
 
+  @Test
+  @DisplayName("DeleteOrder operation test")
+  public void deleteOrder_shouldReturns_statusDeleted() throws Exception {
+    long orderId = Math.abs(RandomGenerator.getDefault().nextLong());
+    Mockito.when(orderService.deleteOrder(orderId)).thenReturn(ResponseEntity.noContent().build());
+    mockMvc
+        .perform(MockMvcRequestBuilders.delete("/v1/orders/{order-id}", orderId))
+        .andExpect(MockMvcResultMatchers.status().isNoContent());
+  }
+
   private OrderDTO getOrderDTO() {
     return new OrderDTO(ORDER_AMOUNT, USER_ID, getOrderItems());
   }
