@@ -1,5 +1,6 @@
 package com.suinfinity.order;
 
+import static org.hamcrest.Matchers.comparesEqualTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -21,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.random.RandomGenerator;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -100,6 +100,28 @@ public class OrderControllerTests {
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(jsonPath("$", hasSize(5)))
         .andExpect(jsonPath("$[0].orderItems", hasSize(1)));
+  }
+
+  @Test
+  @DisplayName("UpdateOrder operation test")
+  public void updateOrder_shouldReturns_updatedOrder() throws Exception {
+    OrderDTO orderDTO = this.getOrderDTO();
+    String jsonRequest = getJsonPayload(orderDTO);
+    Order order = OrderMapper.INSTANCE.toOrder(orderDTO);
+    order.setOrderId(Math.abs(RandomGenerator.getDefault().nextLong()));
+    order.setAmount(BigDecimal.valueOf(200));
+    OrderResponseDTO orderResponseDTO = OrderMapper.INSTANCE.toOrderResponseDTO(order);
+    orderResponseDTO.setOrderItems(getOrderItems());
+    Mockito.when(orderService.updateOrder(order.getOrderId(), orderDTO))
+        .thenReturn(ResponseEntity.ok().body(orderResponseDTO));
+    mockMvc
+        .perform(
+            MockMvcRequestBuilders.put("/v1/orders/{order-id}", order.getOrderId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonRequest))
+        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(MockMvcResultMatchers.jsonPath("$.amount", comparesEqualTo(200)))
+        .andExpect(jsonPath("$.orderItems", hasSize(1)));
   }
 
   private OrderDTO getOrderDTO() {
