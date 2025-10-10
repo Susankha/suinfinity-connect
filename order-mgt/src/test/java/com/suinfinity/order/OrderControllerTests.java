@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.random.RandomGenerator;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -79,18 +81,39 @@ public class OrderControllerTests {
         .andExpect(jsonPath("$.orderItems", hasSize(1)));
   }
 
+  @Test
+  @DisplayName("GetOrders operation test")
+  public void getOrders_shouldReturns_Orders() throws Exception {
+    List<Order> orders = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      Order order = getOrder();
+      orders.add(order);
+    }
+    List<OrderResponseDTO> orderResponseDTOS =
+        orders.stream().map(OrderMapper.INSTANCE::toOrderResponseDTO).collect(Collectors.toList());
+    for (OrderResponseDTO orderResponseDTO : orderResponseDTOS) {
+      orderResponseDTO.setOrderItems(getOrderItems());
+    }
+    Mockito.when(orderService.getOrders()).thenReturn(ResponseEntity.ok().body(orderResponseDTOS));
+    mockMvc
+        .perform(MockMvcRequestBuilders.get("/v1/orders"))
+        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(jsonPath("$", hasSize(5)))
+        .andExpect(jsonPath("$[0].orderItems", hasSize(1)));
+  }
+
   private OrderDTO getOrderDTO() {
     return new OrderDTO(ORDER_AMOUNT, USER_ID, getOrderItems());
   }
 
   private Order getOrder() {
     Order order = new Order();
-    order.setOrderId(RandomGenerator.getDefault().nextLong());
+    order.setOrderId(Math.abs(RandomGenerator.getDefault().nextLong()));
     order.setOrderDate(
         Date.from(
             Instant.now().atZone(ZoneOffset.UTC).toLocalDateTime().toInstant(ZoneOffset.UTC)));
     order.setAmount(BigDecimal.valueOf(100));
-    order.setUserid(RandomGenerator.getDefault().nextLong());
+    order.setUserid(Math.abs(RandomGenerator.getDefault().nextLong()));
     return order;
   }
 
