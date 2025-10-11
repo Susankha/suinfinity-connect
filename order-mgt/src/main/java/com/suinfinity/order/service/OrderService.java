@@ -61,6 +61,7 @@ public class OrderService {
                 });
     List<OrderItem> orderItemList = orderItemRepository.findByOrderId(orderId);
     if (orderItemList.isEmpty()) {
+      log.error("Order '{}' does not exist ", orderId);
       throw new OrderItemNotFoundException(
           "Get order operation failed, order items does not exists with order ID :"
               + "'"
@@ -75,6 +76,10 @@ public class OrderService {
 
   public ResponseEntity<List<OrderResponseDTO>> getOrders() {
     List<Order> orders = orderRepository.findAll();
+    if (orders.isEmpty()) {
+      log.info("Get orders operation failed, orders does not exists");
+      throw new OrderNotFoundException("Get orders operation failed, orders does not exists");
+    }
     Iterator<Order> orderIterator = orders.iterator();
     Map<Long, List<Map<String, String>>> orderItemDTOSMap = new HashMap<>();
 
@@ -83,6 +88,7 @@ public class OrderService {
       long orderId = order.getOrderId();
       List<OrderItem> orderItemList = orderItemRepository.findByOrderId(orderId);
       if (orderItemList.isEmpty()) {
+        log.error("Order items does not exist with order ID :'{}'", orderId);
         throw new OrderItemNotFoundException(
             "Get orders operation failed, order items does not exists with order ID :"
                 + "'"
@@ -96,10 +102,6 @@ public class OrderService {
         orders.stream().map(OrderMapper.INSTANCE::toOrderResponseDTO).toList();
     for (OrderResponseDTO orderResponseDTO : orderResponseDTOS) {
       orderResponseDTO.setOrderItems(orderItemDTOSMap.get(orderResponseDTO.getOrderId()));
-    }
-    if (orders.isEmpty()) {
-      log.info("Orders are empty");
-      return ResponseEntity.notFound().build();
     }
     return ResponseEntity.ok(orderResponseDTOS);
   }
