@@ -4,6 +4,7 @@ import com.suinfinity.order.dto.OrderDTO;
 import com.suinfinity.order.dto.OrderItemDTO;
 import com.suinfinity.order.dto.OrderItemResponseDTO;
 import com.suinfinity.order.dto.OrderResponseDTO;
+import com.suinfinity.order.exception.OrderItemNotFoundException;
 import com.suinfinity.order.exception.OrderNotFoundException;
 import com.suinfinity.order.mapper.OrderItemMapper;
 import com.suinfinity.order.mapper.OrderMapper;
@@ -59,6 +60,13 @@ public class OrderService {
                       "Order " + "'" + orderId + "'" + " does not exist");
                 });
     List<OrderItem> orderItemList = orderItemRepository.findByOrderId(orderId);
+    if (orderItemList.isEmpty()) {
+      throw new OrderItemNotFoundException(
+          "Get order operation failed, order items does not exists with order ID :"
+              + "'"
+              + orderId
+              + "'");
+    }
     List<Map<String, String>> orderItemDTOS = this.getOrderItems(orderItemList);
     OrderResponseDTO orderResponseDTO = OrderMapper.INSTANCE.toOrderResponseDTO(order);
     orderResponseDTO.setOrderItems(orderItemDTOS);
@@ -74,6 +82,13 @@ public class OrderService {
       Order order = orderIterator.next();
       long orderId = order.getOrderId();
       List<OrderItem> orderItemList = orderItemRepository.findByOrderId(orderId);
+      if (orderItemList.isEmpty()) {
+        throw new OrderItemNotFoundException(
+            "Get orders operation failed, order items does not exists with order ID :"
+                + "'"
+                + orderId
+                + "'");
+      }
       List<Map<String, String>> orderItemDTOS = this.getOrderItems(orderItemList);
       orderItemDTOSMap.put(orderId, orderItemDTOS);
     }
@@ -110,6 +125,13 @@ public class OrderService {
     List<Map<String, String>> updatedOrderItems;
     try {
       List<OrderItem> exsistOrderItemList = orderItemRepository.findByOrderId(orderId);
+      if (exsistOrderItemList.isEmpty()) {
+        throw new OrderItemNotFoundException(
+            "Update operation failed, order items does not exists with order ID :"
+                + "'"
+                + orderId
+                + "'");
+      }
       for (int i = 0; i < exsistOrderItemList.size(); i++) {
         OrderItem item = exsistOrderItemList.get(i);
         OrderItemDTO orderItemDTO = orderItemDTOS.get(i);
