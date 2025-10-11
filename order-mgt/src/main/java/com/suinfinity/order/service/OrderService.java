@@ -68,7 +68,7 @@ public class OrderService {
               + orderId
               + "'");
     }
-    List<Map<String, String>> orderItemDTOS = this.getOrderItems(orderItemList);
+    List<Map<String, String>> orderItemDTOS = this.getOrderItemResponseDTOs(orderItemList);
     OrderResponseDTO orderResponseDTO = OrderMapper.INSTANCE.toOrderResponseDTO(order);
     orderResponseDTO.setOrderItems(orderItemDTOS);
     return ResponseEntity.ok(orderResponseDTO);
@@ -95,7 +95,7 @@ public class OrderService {
                 + orderId
                 + "'");
       }
-      List<Map<String, String>> orderItemDTOS = this.getOrderItems(orderItemList);
+      List<Map<String, String>> orderItemDTOS = this.getOrderItemResponseDTOs(orderItemList);
       orderItemDTOSMap.put(orderId, orderItemDTOS);
     }
     List<OrderResponseDTO> orderResponseDTOS =
@@ -142,7 +142,7 @@ public class OrderService {
         item.setQuantity(orderItemDTO.getQuantity());
         orderItemRepository.save(item);
       }
-      updatedOrderItems = getOrderItems(exsistOrderItemList);
+      updatedOrderItems = getOrderItemResponseDTOs(exsistOrderItemList);
     } catch (OrderNotFoundException ex) {
       throw new RuntimeException(
           "Update operation failed, order " + "'" + orderId + "'" + " does not exists");
@@ -169,13 +169,13 @@ public class OrderService {
     return ResponseEntity.noContent().build();
   }
 
-  private List<Map<String, String>> getOrderItems(List<OrderItem> orderItemList) {
+  private List<Map<String, String>> getOrderItemResponseDTOs(List<OrderItem> orderItemList) {
     ListIterator<OrderItem> listIterator = orderItemList.listIterator();
     List<Map<String, String>> orderItemResponseDTOList = new ArrayList<>();
     while (listIterator.hasNext()) {
       OrderItem orderItem = listIterator.next();
       OrderItemResponseDTO orderItemResponseDTO =
-          OrderItemMapper.INSTANCE.toOrderItemDTO(orderItem);
+          OrderItemMapper.INSTANCE.toOrderItemResponseDTO(orderItem);
       Map<String, String> orderItems = OrderUtil.setOrderItemDTO(orderItemResponseDTO);
       orderItemResponseDTOList.add(orderItems);
     }

@@ -14,5 +14,5 @@ public interface OrderItemMapper {
 
   OrderItem toOrderItem(OrderItemDTO orderItemDTO);
 
-  OrderItemResponseDTO toOrderItemDTO(OrderItem orderItem);
+  OrderItemResponseDTO toOrderItemResponseDTO(OrderItem orderItem);
 }
