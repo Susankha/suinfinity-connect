@@ -19,33 +19,33 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/v1/users")
 public class UserController {
 
   @Autowired private UserService userService;
 
-  @PostMapping(value = "/new", produces = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> registerUser(@Valid @RequestBody UserDTO userDTO) {
     return userService.registerUser(userDTO);
   }
 
-  @GetMapping(value = "/get/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping(value = "/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<UserResponseDTO> getUser(@NotBlank @PathVariable String name) {
     return userService.getUser(name);
   }
 
-  @GetMapping(value = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<List<UserResponseDTO>> getUsers() {
     return userService.getUsers();
   }
 
-  @PutMapping(value = "/update/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @PutMapping(value = "/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<UserResponseDTO> updateUser(
       @NotBlank @PathVariable String name, @Valid @RequestBody UserDTO user) {
     return userService.updateUser(name, user);
   }
 
-  @DeleteMapping(value = "/delete/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @DeleteMapping(value = "/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> deleteUser(@NotBlank @PathVariable String name) {
     return userService.deleteUser(name);
   }
