@@ -12,17 +12,9 @@ This component is responsible to handle user management of the suinfinity soluti
 
 user-mgt comes with rest APIs to handle user management scenarios.
 
-Swagger UI → [http://localhost:8080/api-docs](http://localhost:8080/swagger-ui/index.html)
+Swagger UI → [http://localhost:8080/api-docs](http://localhost:8080/api/swagger-ui/index.html)
 
-<img width="797" height="401" alt="swagger_def" src="https://github.com/user-attachments/assets/8bc38c87-bfc1-4399-a526-514d7663fbf9" />
-
-#### Monitoring with actuator
-
-Enabled actuator for monitoring purposes such as service health info, metrics, mappings.
-
-Actuator URL → http://localhost:8080/details 
-
-Logfile URL → http://localhost:8080/details/logfile
+<img width="752" height="370" alt="user-mgt_swagger" src="https://github.com/user-attachments/assets/ead29e89-d445-4bb5-b85f-f3dbfb06b2de" />
 
 ## Order Management
 
