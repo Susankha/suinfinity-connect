@@ -23,3 +23,23 @@ Enabled actuator for monitoring purposes such as service health info, metrics, m
 Actuator URL → http://localhost:8080/details 
 
 Logfile URL → http://localhost:8080/details/logfile
+
+## Order Management
+
+This component is responsible to handle order management of the suinfinity solution:
+
+#### Getting Started
+
+order-mgt comes with rest APIs to handle user management scenarios.
+
+Swagger UI → [http://localhost:8082/api-docs](http://localhost:8082/api/swagger-ui/index.html)
+
+<img width="797" height="401" alt="swagger_def" src="https://github.com/user-attachments/assets/8bc38c87-bfc1-4399-a526-514d7663fbf9" />
+
+#### Monitoring with actuator
+
+Enabled actuator for monitoring purposes such as service health info, metrics, mappings.
+
+Actuator URL → http://localhost:[port]/details
+
+Logfile URL → http://localhost:[port]/details/logfile
