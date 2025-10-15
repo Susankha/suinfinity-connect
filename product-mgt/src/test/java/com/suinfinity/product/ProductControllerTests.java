@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.random.RandomGenerator;
 import java.util.stream.Stream;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 @WebMvcTest(ProductController.class)
+@DisplayName("Product Operations Test Suite")
 public class ProductControllerTests {
 
   private static final String TEST_PRODUCT = "test_product";
@@ -46,7 +48,7 @@ public class ProductControllerTests {
 
     mockMvc
         .perform(
-            MockMvcRequestBuilders.post("/products/new")
+            MockMvcRequestBuilders.post("/v1/products")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonRequest))
         .andExpect(MockMvcResultMatchers.status().isCreated());
@@ -59,7 +61,7 @@ public class ProductControllerTests {
     Mockito.when(productService.getProduct(product.getName()))
         .thenReturn(ResponseEntity.ok().body(productResponseDTO));
     mockMvc
-        .perform(MockMvcRequestBuilders.get("/products/get/{name}", product.getName()))
+        .perform(MockMvcRequestBuilders.get("/v1/products/{name}", product.getName()))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.startsWith("test")))
         .andExpect(MockMvcResultMatchers.jsonPath("$.stockQuantity").value(25));
@@ -72,7 +74,7 @@ public class ProductControllerTests {
     Mockito.when(productService.getProducts())
         .thenReturn(ResponseEntity.ok().body(productResponseDTOS));
     mockMvc
-        .perform(MockMvcRequestBuilders.get("/products/all"))
+        .perform(MockMvcRequestBuilders.get("/v1/products"))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty());
   }
@@ -91,7 +93,7 @@ public class ProductControllerTests {
         .thenReturn(ResponseEntity.ok().body(productResponseDTO));
     mockMvc
         .perform(
-            MockMvcRequestBuilders.put("/products/update/{name}", product.getName())
+            MockMvcRequestBuilders.put("/v1/products/{name}", product.getName())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonPayload))
         .andExpect(MockMvcResultMatchers.status().isOk())

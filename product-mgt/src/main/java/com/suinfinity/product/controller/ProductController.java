@@ -19,33 +19,33 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/products")
+@RequestMapping("/v1/products")
 public class ProductController {
 
   @Autowired private ProductService productService;
 
-  @PostMapping(value = "/new", produces = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
   private ResponseEntity<?> registerProduct(@Valid @RequestBody ProductDTO productDTO) {
     return productService.registerProduct(productDTO);
   }
 
-  @GetMapping(value = "/get/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping(value = "/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
   private ResponseEntity<ProductResponseDTO> getProduct(@NotBlank @PathVariable String name) {
     return productService.getProduct(name);
   }
 
-  @GetMapping(value = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
   private ResponseEntity<List<ProductResponseDTO>> getProducts() {
     return productService.getProducts();
   }
 
-  @PutMapping(value = "/update/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @PutMapping(value = "/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
   private ResponseEntity<ProductResponseDTO> updateProduct(
       @NotBlank @PathVariable String name, @Valid @RequestBody ProductDTO productDTO) {
     return productService.updateProduct(name, productDTO);
   }
 
-  @DeleteMapping(value = "/delete/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @DeleteMapping(value = "/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
   private ResponseEntity<?> deleteProduct(@NotBlank @PathVariable String name) {
     return productService.deleteProduct(name);
   }
