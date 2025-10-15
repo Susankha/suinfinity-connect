@@ -2,7 +2,6 @@ package com.suinfinity.user;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.suinfinity.user.controller.UserController;
 import com.suinfinity.user.dto.UserDTO;
 import com.suinfinity.user.dto.UserDTO.Address;
 import com.suinfinity.user.dto.UserResponseDTO;
@@ -13,6 +12,7 @@ import java.util.List;
 import java.util.random.RandomGenerator;
 import java.util.stream.Stream;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-@WebMvcTest(UserController.class)
+@WebMvcTest
+@DisplayName("User Operations Test Suite")
 public class UserControllerTests {
 
   private static final String TEST_USER = "test_user";
@@ -42,7 +43,7 @@ public class UserControllerTests {
 
     mockMvc
         .perform(
-            MockMvcRequestBuilders.post("/users/new")
+            MockMvcRequestBuilders.post("/v1/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonRequest))
         .andExpect(MockMvcResultMatchers.status().isCreated());
@@ -54,7 +55,7 @@ public class UserControllerTests {
     UserResponseDTO userDTO = UserMapper.INSTANCE.toUserResponseDto(user);
     Mockito.when(userService.getUser(user.getName())).thenReturn(ResponseEntity.ok().body(userDTO));
     mockMvc
-        .perform(MockMvcRequestBuilders.get("/users/get/{user}", user.getName()))
+        .perform(MockMvcRequestBuilders.get("/v1/users/{user}", user.getName()))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.startsWith("test")))
         .andExpect(MockMvcResultMatchers.jsonPath("$.address.street", Matchers.notNullValue()));
@@ -66,7 +67,7 @@ public class UserControllerTests {
         Stream.of(getUser()).map(UserMapper.INSTANCE::toUserResponseDto).toList();
     Mockito.when(userService.getUsers()).thenReturn(ResponseEntity.ok(userResponseDTOS));
     mockMvc
-        .perform(MockMvcRequestBuilders.get("/users/all"))
+        .perform(MockMvcRequestBuilders.get("/v1/users"))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty());
   }
@@ -83,7 +84,7 @@ public class UserControllerTests {
         .thenReturn(ResponseEntity.ok().body(userResponseDTO));
     mockMvc
         .perform(
-            MockMvcRequestBuilders.put("/users/update/{user}", user.getName())
+            MockMvcRequestBuilders.put("/v1/users/{user}", user.getName())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(payload))
         .andExpect(MockMvcResultMatchers.status().isOk())
@@ -95,7 +96,7 @@ public class UserControllerTests {
     String userName = TEST_USER;
     Mockito.when(userService.deleteUser(userName)).thenReturn(ResponseEntity.noContent().build());
     mockMvc
-        .perform(MockMvcRequestBuilders.delete("/users/delete/{user}", userName))
+        .perform(MockMvcRequestBuilders.delete("/v1/users/{user}", userName))
         .andExpect(MockMvcResultMatchers.status().isNoContent());
   }
 
