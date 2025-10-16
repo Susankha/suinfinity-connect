@@ -26,7 +26,8 @@ product-mgt comes with rest APIs to handle product management scenarios.
 
 Swagger UI → [http://localhost:8082/api-docs](http://localhost:8082/api/swagger-ui/index.html)
 
-<img width="752" height="370" alt="order_mgt_swagger" src="https://github.com/user-attachments/assets/078787ce-55df-4764-b4b0-adada7a68cfa" />
+<img width="752" height="370" alt="product_mgt_swagger" src="https://github.com/user-attachments/assets/67847632-6d30-4006-b551-13390c9b3d7b" />
+
 
 ## Order Management
 
