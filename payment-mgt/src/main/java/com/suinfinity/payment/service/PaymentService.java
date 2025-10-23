@@ -1,6 +1,7 @@
 package com.suinfinity.payment.service;
 
 import com.suinfinity.payment.dto.PaymentDTO;
+import com.suinfinity.payment.dto.PaymentResponseDTO;
 import com.suinfinity.payment.mapper.PaymentMapper;
 import com.suinfinity.payment.model.Payment;
 import com.suinfinity.payment.repository.PaymentRepository;
@@ -19,5 +20,18 @@ public class PaymentService {
     Payment payment = PaymentMapper.INSTANCE.toPayment(paymentDTO);
     paymentRepository.save(payment);
     return null;
+  }
+
+  public ResponseEntity<PaymentResponseDTO> getPayment(long paymentId) {
+    Payment payment =
+        paymentRepository
+            .findById(paymentId)
+            .orElseThrow(
+                () -> {
+                  log.info("payment not found");
+                  return new RuntimeException("payment not found with id:" + paymentId);
+                });
+    PaymentResponseDTO paymentResponseDTO = PaymentMapper.INSTANCE.toPaymentResponseDTO(payment);
+    return ResponseEntity.ok(paymentResponseDTO);
   }
 }
