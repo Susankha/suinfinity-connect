@@ -20,6 +20,7 @@
     <module>../product-mgt</module>
     <module>../user-mgt</module>
     <module>../order-mgt</module>
+    <module>../payment-mgt</module>
   </modules>
   <build>
     <plugins>
