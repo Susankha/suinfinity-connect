@@ -3,6 +3,7 @@ package com.suinfinity.payment.controller;
 import com.suinfinity.payment.dto.PaymentDTO;
 import com.suinfinity.payment.dto.PaymentResponseDTO;
 import com.suinfinity.payment.service.PaymentService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,5 +28,10 @@ public class PaymentController {
   @GetMapping(value = "/{payment-id}", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<PaymentResponseDTO> getPayment(@PathVariable("payment-id") long paymentId) {
     return paymentService.getPayment(paymentId);
+  }
+
+  @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<List<PaymentResponseDTO>> getPayments() {
+    return paymentService.getPayments();
   }
 }
