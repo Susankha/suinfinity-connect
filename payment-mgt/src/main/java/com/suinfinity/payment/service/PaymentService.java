@@ -2,6 +2,7 @@ package com.suinfinity.payment.service;
 
 import com.suinfinity.payment.dto.PaymentDTO;
 import com.suinfinity.payment.dto.PaymentResponseDTO;
+import com.suinfinity.payment.exception.PaymentNotFoundException;
 import com.suinfinity.payment.mapper.PaymentMapper;
 import com.suinfinity.payment.model.Payment;
 import com.suinfinity.payment.repository.PaymentRepository;
@@ -23,7 +24,14 @@ public class PaymentService {
 
   public ResponseEntity<?> makePayment(PaymentDTO paymentDTO) {
     Payment payment = PaymentMapper.INSTANCE.toPayment(paymentDTO);
-    paymentRepository.save(payment);
+    long paymentId = payment.getPaymentId();
+    try {
+      paymentRepository.save(payment);
+    } catch (RuntimeException e) {
+      log.error("Process payment operation failed with payment id : {}", paymentId);
+      throw new RuntimeException(
+          "Process payment with id " + "'" + paymentId + "'" + " operation failed");
+    }
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
 
@@ -33,8 +41,10 @@ public class PaymentService {
             .findById(paymentId)
             .orElseThrow(
                 () -> {
-                  log.info("payment not found with id :" + paymentId);
-                  return new RuntimeException("payment not found with id:" + paymentId);
+                  log.info(
+                      "Get payment operation failed, payment does not found with id :" + paymentId);
+                  return new PaymentNotFoundException(
+                      "Get payment operation failed, payment doesn't exists with id:" + paymentId);
                 });
     PaymentResponseDTO paymentResponseDTO = PaymentMapper.INSTANCE.toPaymentResponseDTO(payment);
     return ResponseEntity.ok(paymentResponseDTO);
@@ -42,6 +52,10 @@ public class PaymentService {
 
   public ResponseEntity<List<PaymentResponseDTO>> getPayments() {
     List<Payment> payments = paymentRepository.findAll();
+    if (payments.isEmpty()) {
+      log.info("Get payments operation failed, payments does not exists");
+      throw new PaymentNotFoundException("Get payments operation failed, payments doesn't exists");
+    }
     List<PaymentResponseDTO> paymentResponseDTOS =
         payments.stream().map(PaymentMapper.INSTANCE::toPaymentResponseDTO).toList();
     return ResponseEntity.ok(paymentResponseDTOS);
@@ -53,8 +67,12 @@ public class PaymentService {
             .findById(paymentId)
             .orElseThrow(
                 () -> {
-                  log.info("payment not found with id :" + paymentId);
-                  return new RuntimeException("payment not found with id:" + paymentId);
+                  log.info(
+                      "Update payments operation failed, payment does not exists with id :"
+                          + paymentId);
+                  return new PaymentNotFoundException(
+                      "Update payments operation failed, payment doesn't exists with id:"
+                          + paymentId);
                 });
     Date updatedDate =
         Date.from(Instant.now().atZone(ZoneOffset.UTC).toLocalDateTime().toInstant(ZoneOffset.UTC));
@@ -68,7 +86,13 @@ public class PaymentService {
   }
 
   public ResponseEntity<Void> deletePayment(long paymentId) {
-    paymentRepository.deleteById(paymentId);
+    try {
+      paymentRepository.deleteByPaymentId(paymentId);
+    } catch (PaymentNotFoundException ex) {
+      log.error("Payment id '{}' does not exist, delete operation failed", paymentId);
+      throw new RuntimeException(
+          "Delete payment operation failed, payment doesn't exists with id:" + paymentId);
+    }
     return ResponseEntity.noContent().build();
   }
 }

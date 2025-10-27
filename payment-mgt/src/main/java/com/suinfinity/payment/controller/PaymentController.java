@@ -3,6 +3,8 @@ package com.suinfinity.payment.controller;
 import com.suinfinity.payment.dto.PaymentDTO;
 import com.suinfinity.payment.dto.PaymentResponseDTO;
 import com.suinfinity.payment.service.PaymentService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -23,12 +25,13 @@ public class PaymentController {
   @Autowired private PaymentService paymentService;
 
   @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<?> makePayment(@RequestBody PaymentDTO paymentDTO) {
+  public ResponseEntity<?> makePayment(@Valid @RequestBody PaymentDTO paymentDTO) {
     return paymentService.makePayment(paymentDTO);
   }
 
   @GetMapping(value = "/{payment-id}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<PaymentResponseDTO> getPayment(@PathVariable("payment-id") long paymentId) {
+  public ResponseEntity<PaymentResponseDTO> getPayment(
+      @NotNull @PathVariable("payment-id") long paymentId) {
     return paymentService.getPayment(paymentId);
   }
 
@@ -39,12 +42,13 @@ public class PaymentController {
 
   @PutMapping(value = "/{payment-id}", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<PaymentResponseDTO> updatePayment(
-      @PathVariable("payment-id") long paymentId, @RequestBody PaymentDTO paymentDTO) {
+      @NotNull @PathVariable("payment-id") long paymentId,
+      @Valid @RequestBody PaymentDTO paymentDTO) {
     return paymentService.updatePayment(paymentId, paymentDTO);
   }
 
   @DeleteMapping(value = "/{payment-id}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<?> deletePayment(@PathVariable("payment-id") long paymentID) {
+  public ResponseEntity<?> deletePayment(@NotNull @PathVariable("payment-id") long paymentID) {
     return paymentService.deletePayment(paymentID);
   }
 }

@@ -1,4 +1,4 @@
-package com.suinfinity.user.exception;
+package com.suinfinity.payment.exception;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -9,7 +9,7 @@ import java.util.List;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -23,7 +23,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-@Slf4j
+@Log4j2
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -54,9 +54,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     return ResponseEntity.status(status.value()).headers(headers).body(errorResponse);
   }
 
-  @ExceptionHandler(UserNotFoundException.class)
-  protected ResponseEntity<Object> handleUserNotFoundException(
-      UserNotFoundException ex, WebRequest request) {
+  @ExceptionHandler(PaymentNotFoundException.class)
+  protected ResponseEntity<Object> handlePaymentNotFoundException(
+      PaymentNotFoundException ex, WebRequest request) {
     String errorMessage = ex.getMessage();
     ErrorResponse errorResponse =
         getErrorResponse(HttpStatus.NOT_FOUND.value(), errorMessage, request);
