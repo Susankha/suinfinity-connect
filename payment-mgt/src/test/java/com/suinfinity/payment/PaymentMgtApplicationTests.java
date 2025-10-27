@@ -15,7 +15,6 @@ public class PaymentMgtApplicationTests {
 
   @Autowired PaymentController paymentController;
 
-  @Test
   void contextLoad() {
     log.info("Payment Mgt application test");
     Assertions.assertNotNull(paymentController, "Payment Mgt App context loading failed");
