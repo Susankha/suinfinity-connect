@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Log4j2
 @Service
@@ -85,6 +86,7 @@ public class PaymentService {
     return ResponseEntity.ok(paymentResponseDTO);
   }
 
+  @Transactional
   public ResponseEntity<Void> deletePayment(long paymentId) {
     try {
       paymentRepository.deleteByPaymentId(paymentId);
