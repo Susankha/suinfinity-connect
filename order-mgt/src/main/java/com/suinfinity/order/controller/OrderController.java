@@ -42,7 +42,7 @@ public class OrderController {
 
   @PutMapping(value = "/{order-id}", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<OrderResponseDTO> updateOrder(
-      @NotNull @PathVariable("order-id") long orderId, @RequestBody OrderDTO orderDTO) {
+      @NotNull @PathVariable("order-id") long orderId, @Valid @RequestBody OrderDTO orderDTO) {
     return orderService.updateOrder(orderId, orderDTO);
   }
 

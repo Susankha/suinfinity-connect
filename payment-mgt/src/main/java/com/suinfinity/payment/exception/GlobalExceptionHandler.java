@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.ServletWebRequest;
@@ -25,6 +26,24 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 @Log4j2
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+
+  @Override
+  protected ResponseEntity<Object> handleMethodArgumentNotValid(
+      MethodArgumentNotValidException ex,
+      HttpHeaders headers,
+      HttpStatusCode status,
+      WebRequest request) {
+
+    List<String> errors =
+        ex.getBindingResult().getFieldErrors().stream()
+            .map(fieldError -> fieldError.getDefaultMessage())
+            .toList();
+    String errorMessage = "Validation failed";
+    ErrorResponse errorResponse = getErrorResponse(status.value(), errorMessage, request);
+    errorResponse.setErrors(errors);
+    log.error(errorMessage, ex);
+    return ResponseEntity.status(status.value()).headers(headers).body(errorResponse);
+  }
 
   @Override
   protected ResponseEntity<Object> handleNoResourceFoundException(
