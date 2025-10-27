@@ -2,7 +2,6 @@ package com.suinfinity.payment.dto;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
@@ -30,7 +29,7 @@ public class PaymentDTO {
   @Pattern(
       regexp = "^[A-Za-z][A-Za-z0-9_\\s]+$",
       message =
-          "Payment status must start with a letter and contain only alphanumeric characters or underscores")
+          "Payment method must start with a letter and contain only alphanumeric characters or underscores")
   private String paymentMethod;
 
   private LocalDateTime paymentDate;
