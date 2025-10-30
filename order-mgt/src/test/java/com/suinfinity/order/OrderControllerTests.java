@@ -4,6 +4,8 @@ import static org.hamcrest.Matchers.comparesEqualTo;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -12,11 +14,10 @@ import com.suinfinity.order.dto.OrderResponseDTO;
 import com.suinfinity.order.mapper.OrderMapper;
 import com.suinfinity.order.model.Order;
 import com.suinfinity.order.service.OrderService;
+import com.suinfinity.order.util.OrderStatus;
+import com.suinfinity.order.util.OrderUtil;
 import java.math.BigDecimal;
-import java.time.Instant;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -125,6 +126,21 @@ public class OrderControllerTests {
   }
 
   @Test
+  @DisplayName("UpdateOrderStatus operation test")
+  public void updateOrderStatus_shouldReturns_updatedStatus() throws Exception {
+    long orderId = Math.abs(RandomGenerator.getDefault().nextLong());
+    Mockito.when(orderService.updateOrderStatus(orderId, OrderStatus.PROCESSING.toString()))
+        .thenReturn(ResponseEntity.ok().build());
+    mockMvc
+        .perform(
+            MockMvcRequestBuilders.patch(
+                "/v1/orders/{order-id}/status/{order-status}",
+                orderId,
+                OrderStatus.PROCESSING.toString()))
+        .andExpect(status().isOk());
+  }
+
+  @Test
   @DisplayName("DeleteOrder operation test")
   public void deleteOrder_shouldReturns_statusDeleted() throws Exception {
     long orderId = Math.abs(RandomGenerator.getDefault().nextLong());
@@ -141,10 +157,9 @@ public class OrderControllerTests {
   private Order getOrder() {
     Order order = new Order();
     order.setOrderId(Math.abs(RandomGenerator.getDefault().nextLong()));
-    order.setOrderDate(
-        Date.from(
-            Instant.now().atZone(ZoneOffset.UTC).toLocalDateTime().toInstant(ZoneOffset.UTC)));
+    order.setOrderDate(OrderUtil.getCurrentDateTime());
     order.setAmount(BigDecimal.valueOf(100));
+    order.setStatus(OrderStatus.NEW.toString());
     order.setUserid(Math.abs(RandomGenerator.getDefault().nextLong()));
     return order;
   }

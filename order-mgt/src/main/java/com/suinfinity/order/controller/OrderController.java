@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -49,5 +50,14 @@ public class OrderController {
   @DeleteMapping(value = "/{order-id}", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> deleteOrder(@NotNull @PathVariable("order-id") long orderId) {
     return orderService.deleteOrder(orderId);
+  }
+
+  @PatchMapping(
+      value = "/{order-id}/status/{order-status}",
+      produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<OrderResponseDTO> updateOrderStatus(
+      @NotNull @PathVariable("order-id") long orderId,
+      @NotNull @PathVariable("order-status") String orderStatus) {
+    return orderService.updateOrderStatus(orderId, orderStatus);
   }
 }

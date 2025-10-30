@@ -3,6 +3,9 @@ package com.suinfinity.order.util;
 import com.suinfinity.order.dto.OrderItemDTO;
 import com.suinfinity.order.dto.OrderItemResponseDTO;
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,5 +30,10 @@ public class OrderUtil {
     orderItemMap.put(PRICE, String.valueOf(orderItemResponseDTO.getPrice()));
     orderItemMap.put(QUANTITY, String.valueOf(orderItemResponseDTO.getQuantity()));
     return orderItemMap;
+  }
+
+  public static Date getCurrentDateTime() {
+    return Date.from(
+        Instant.now().atZone(ZoneOffset.UTC).toLocalDateTime().toInstant(ZoneOffset.UTC));
   }
 }

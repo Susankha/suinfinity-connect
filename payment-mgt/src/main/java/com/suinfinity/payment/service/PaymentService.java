@@ -42,8 +42,8 @@ public class PaymentService {
             .findById(paymentId)
             .orElseThrow(
                 () -> {
-                  log.info(
-                      "Get payment operation failed, payment does not found with id :" + paymentId);
+                  log.info("Get payment operation failed, payment does not found with id :{}",
+                      paymentId);
                   return new PaymentNotFoundException(
                       "Get payment operation failed, payment doesn't exists with id:" + paymentId);
                 });
@@ -68,9 +68,8 @@ public class PaymentService {
             .findById(paymentId)
             .orElseThrow(
                 () -> {
-                  log.info(
-                      "Update payments operation failed, payment does not exists with id :"
-                          + paymentId);
+                  log.info("Update payments operation failed, payment does not exists with id :{}",
+                      paymentId);
                   return new PaymentNotFoundException(
                       "Update payments operation failed, payment doesn't exists with id:"
                           + paymentId);

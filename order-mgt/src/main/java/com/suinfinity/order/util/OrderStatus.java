@@ -1,0 +1,9 @@
+package com.suinfinity.order.util;
+
+public enum OrderStatus {
+  NEW,
+  PROCESSING,
+  SHIPPED,
+  DELIVERED,
+  CANCELLED
+}

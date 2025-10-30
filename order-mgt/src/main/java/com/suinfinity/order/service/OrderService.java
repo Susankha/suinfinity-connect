@@ -12,9 +12,8 @@ import com.suinfinity.order.model.Order;
 import com.suinfinity.order.model.OrderItem;
 import com.suinfinity.order.repository.OrderItemRepository;
 import com.suinfinity.order.repository.OrderRepository;
+import com.suinfinity.order.util.OrderStatus;
 import com.suinfinity.order.util.OrderUtil;
-import java.time.Instant;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -38,6 +37,7 @@ public class OrderService {
 
   public ResponseEntity<?> placeOrder(OrderDTO orderDTO) {
     Order order = OrderMapper.INSTANCE.toOrder(orderDTO);
+    order.setStatus(OrderStatus.NEW.toString());
     List<Map<String, String>> orderItems = orderDTO.getOrderItems();
     try {
       orderRepository.save(order);
@@ -59,15 +59,7 @@ public class OrderService {
                   return new OrderNotFoundException(
                       "Order " + "'" + orderId + "'" + " does not exist");
                 });
-    List<OrderItem> orderItemList = orderItemRepository.findByOrderId(orderId);
-    if (orderItemList.isEmpty()) {
-      log.error("Order '{}' does not exist ", orderId);
-      throw new OrderItemNotFoundException(
-          "Get order operation failed, order items does not exists with order ID :"
-              + "'"
-              + orderId
-              + "'");
-    }
+    List<OrderItem> orderItemList = this.getOrderItemsList(orderId);
     List<Map<String, String>> orderItemDTOS = this.getOrderItemResponseDTOs(orderItemList);
     OrderResponseDTO orderResponseDTO = OrderMapper.INSTANCE.toOrderResponseDTO(order);
     orderResponseDTO.setOrderItems(orderItemDTOS);
@@ -86,15 +78,7 @@ public class OrderService {
     while (orderIterator.hasNext()) {
       Order order = orderIterator.next();
       long orderId = order.getOrderId();
-      List<OrderItem> orderItemList = orderItemRepository.findByOrderId(orderId);
-      if (orderItemList.isEmpty()) {
-        log.error("Order items does not exist with order ID :'{}'", orderId);
-        throw new OrderItemNotFoundException(
-            "Get orders operation failed, order items does not exists with order ID :"
-                + "'"
-                + orderId
-                + "'");
-      }
+      List<OrderItem> orderItemList = this.getOrderItemsList(orderId);
       List<Map<String, String>> orderItemDTOS = this.getOrderItemResponseDTOs(orderItemList);
       orderItemDTOSMap.put(orderId, orderItemDTOS);
     }
@@ -120,8 +104,7 @@ public class OrderService {
     for (Map<String, String> orderItemMap : orderDTO.getOrderItems()) {
       orderItemDTOS.add(OrderUtil.getOrderItemDTO(orderItemMap));
     }
-    Date updatedDate =
-        Date.from(Instant.now().atZone(ZoneOffset.UTC).toLocalDateTime().toInstant(ZoneOffset.UTC));
+    Date updatedDate = OrderUtil.getCurrentDateTime();
     order.setOrderDate(updatedDate);
     order.setAmount(orderDTO.getAmount());
     List<Map<String, String>> updatedOrderItems;
@@ -167,6 +150,37 @@ public class OrderService {
           "Delete operation failed, Order " + "'" + orderId + "'" + " does not exists");
     }
     return ResponseEntity.noContent().build();
+  }
+
+  @Transactional
+  public ResponseEntity<OrderResponseDTO> updateOrderStatus(long orderId, String status) {
+    Order order =
+        orderRepository
+            .findById(orderId)
+            .orElseThrow(
+                () -> {
+                  log.error("Order '{}' does not exist, status update operation failed ", orderId);
+                  return new OrderNotFoundException(
+                      "Update operation failed, order " + "'" + orderId + "'" + " does not exists");
+                });
+    order.setStatus(status);
+    Date updatedDate = OrderUtil.getCurrentDateTime();
+    order.setOrderDate(updatedDate);
+    orderRepository.save(order);
+    return ResponseEntity.ok().build();
+  }
+
+  private List<OrderItem> getOrderItemsList(long orderId) {
+    List<OrderItem> orderItemList = orderItemRepository.findByOrderId(orderId);
+    if (orderItemList.isEmpty()) {
+      log.error("Order '{}' does not exist ", orderId);
+      throw new OrderItemNotFoundException(
+          "Get order operation failed, order items does not exists with order ID :"
+              + "'"
+              + orderId
+              + "'");
+    }
+    return orderItemList;
   }
 
   private List<Map<String, String>> getOrderItemResponseDTOs(List<OrderItem> orderItemList) {
