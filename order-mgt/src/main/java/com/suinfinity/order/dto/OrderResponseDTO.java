@@ -1,5 +1,6 @@
 package com.suinfinity.order.dto;
 
+import com.suinfinity.order.util.OrderStatus;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -13,5 +14,6 @@ public class OrderResponseDTO {
   private Date orderDate;
   private BigDecimal amount;
   private long userid;
+  private OrderStatus status;
   private List<Map<String, String>> orderItems;
 }

@@ -31,4 +31,6 @@ public class Order {
 
   @Column(name = "user_id")
   private long userid;
+
+  private String status;
 }
