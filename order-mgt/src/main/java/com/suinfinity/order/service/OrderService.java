@@ -152,6 +152,26 @@ public class OrderService {
     return ResponseEntity.noContent().build();
   }
 
+  public ResponseEntity<String> getOrderStatus(long orderId) {
+    String orderStatus;
+    try {
+      orderStatus =
+          orderRepository
+              .findOrderStatusByOrderId(orderId)
+              .orElseThrow(
+                  () -> {
+                    log.error("Order does not exist with order id: '{}'", orderId);
+                    return new OrderNotFoundException(
+                        "Order does not exists with order id :" + orderId);
+                  });
+    } catch (OrderNotFoundException ex) {
+      log.error("Order id '{}' does not exist, get status operation failed", orderId);
+      throw new RuntimeException(
+          "Get status operation failed, Order " + "'" + orderId + "'" + " does not exists");
+    }
+    return ResponseEntity.ok(orderStatus);
+  }
+
   @Transactional
   public ResponseEntity<OrderResponseDTO> updateOrderStatus(long orderId, String status) {
     Order order =

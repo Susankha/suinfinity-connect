@@ -52,6 +52,11 @@ public class OrderController {
     return orderService.deleteOrder(orderId);
   }
 
+  @GetMapping(value = "/{order-id}/status", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<String> getOrderStatus(@NotNull @PathVariable("order-id") long orderId) {
+    return orderService.getOrderStatus(orderId);
+  }
+
   @PatchMapping(
       value = "/{order-id}/status/{order-status}",
       produces = MediaType.APPLICATION_JSON_VALUE)

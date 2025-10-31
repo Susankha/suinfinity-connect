@@ -126,6 +126,18 @@ public class OrderControllerTests {
   }
 
   @Test
+  @DisplayName("GetOrderStatus operation test")
+  public void getOrderStatus_shouldReturns_orderStatus() throws Exception {
+    long orderId = Math.abs(RandomGenerator.getDefault().nextLong());
+    Mockito.when(orderService.getOrderStatus(orderId))
+        .thenReturn(ResponseEntity.ok().body(OrderStatus.PROCESSING.toString()));
+    mockMvc
+        .perform(MockMvcRequestBuilders.get("/v1/orders/{order-id}/status", orderId))
+        .andExpect(status().isOk())
+        .andExpect(MockMvcResultMatchers.content().string("PROCESSING"));
+  }
+
+  @Test
   @DisplayName("UpdateOrderStatus operation test")
   public void updateOrderStatus_shouldReturns_updatedStatus() throws Exception {
     long orderId = Math.abs(RandomGenerator.getDefault().nextLong());
