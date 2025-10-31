@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -48,7 +49,22 @@ public class PaymentController {
   }
 
   @DeleteMapping(value = "/{payment-id}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<?> deletePayment(@NotNull @PathVariable("payment-id") long paymentID) {
-    return paymentService.deletePayment(paymentID);
+  public ResponseEntity<?> deletePayment(@NotNull @PathVariable("payment-id") long paymentId) {
+    return paymentService.deletePayment(paymentId);
+  }
+
+  @GetMapping(value = "/{payment-id}/status", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<String> getPaymentStatus(
+      @NotNull @PathVariable("payment-id") long paymentId) {
+    return paymentService.getPaymentStatus(paymentId);
+  }
+
+  @PatchMapping(
+      value = "/{payment-id}/status/{payment-status}",
+      produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<PaymentResponseDTO> updatePaymentStatus(
+      @NotNull @PathVariable("payment-id") long paymentId,
+      @NotNull @PathVariable("payment-status") String paymentStatus) {
+    return paymentService.updatePaymentStatus(paymentId, paymentStatus);
   }
 }
