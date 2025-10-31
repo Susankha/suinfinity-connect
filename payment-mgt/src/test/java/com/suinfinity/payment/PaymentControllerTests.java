@@ -12,6 +12,7 @@ import com.suinfinity.payment.dto.PaymentResponseDTO;
 import com.suinfinity.payment.mapper.PaymentMapper;
 import com.suinfinity.payment.model.Payment;
 import com.suinfinity.payment.service.PaymentService;
+import com.suinfinity.payment.util.PaymentStatus;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -109,6 +110,31 @@ public class PaymentControllerTests {
                 .content(jsonRequest))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(jsonPath("$.paymentMethod", equalTo(PAYMENT_METHOD_CARD)));
+  }
+
+  @Test
+  @DisplayName("GetPaymentStatus operation test")
+  public void getPaymentStatus_shouldReturns_paymentStatus() throws Exception {
+    long paymentId = Math.abs(RandomGenerator.getDefault().nextLong());
+    Mockito.when(paymentService.getPaymentStatus(paymentId))
+        .thenReturn(ResponseEntity.ok().body(PaymentStatus.COMPLETED.toString()));
+    mockMvc
+        .perform(MockMvcRequestBuilders.get("/v1/payments/{payment-id}/status", paymentId))
+        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(MockMvcResultMatchers.content().string("COMPLETED"));
+  }
+
+  @Test
+  @DisplayName("UpdatePaymentStatus operation test")
+  public void updatePaymentStatus_shouldReturns_updatedStatus() throws Exception {
+    long paymentId = Math.abs(RandomGenerator.getDefault().nextLong());
+    Mockito.when(paymentService.updatePaymentStatus(paymentId, PaymentStatus.COMPLETED.toString()))
+        .thenReturn(ResponseEntity.ok().build());
+    mockMvc
+        .perform(
+            MockMvcRequestBuilders.patch(
+                "/v1/payments/{payment-id}/status/{payment-status}", paymentId, "COMPLETED"))
+        .andExpect(MockMvcResultMatchers.status().isOk());
   }
 
   @Test
