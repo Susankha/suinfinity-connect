@@ -6,6 +6,7 @@ import com.suinfinity.payment.exception.PaymentNotFoundException;
 import com.suinfinity.payment.mapper.PaymentMapper;
 import com.suinfinity.payment.model.Payment;
 import com.suinfinity.payment.repository.PaymentRepository;
+import com.suinfinity.payment.util.PaymentStatus;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.Date;
@@ -25,6 +26,7 @@ public class PaymentService {
 
   public ResponseEntity<?> makePayment(PaymentDTO paymentDTO) {
     Payment payment = PaymentMapper.INSTANCE.toPayment(paymentDTO);
+    payment.setPaymentStatus(PaymentStatus.PENDING.toString());
     long paymentId = payment.getPaymentId();
     try {
       paymentRepository.save(payment);
@@ -42,7 +44,8 @@ public class PaymentService {
             .findById(paymentId)
             .orElseThrow(
                 () -> {
-                  log.info("Get payment operation failed, payment does not found with id :{}",
+                  log.info(
+                      "Get payment operation failed, payment does not found with id :{}",
                       paymentId);
                   return new PaymentNotFoundException(
                       "Get payment operation failed, payment doesn't exists with id:" + paymentId);
@@ -68,7 +71,8 @@ public class PaymentService {
             .findById(paymentId)
             .orElseThrow(
                 () -> {
-                  log.info("Update payments operation failed, payment does not exists with id :{}",
+                  log.info(
+                      "Update payments operation failed, payment does not exists with id :{}",
                       paymentId);
                   return new PaymentNotFoundException(
                       "Update payments operation failed, payment doesn't exists with id:"
@@ -95,5 +99,40 @@ public class PaymentService {
           "Delete payment operation failed, payment doesn't exists with id:" + paymentId);
     }
     return ResponseEntity.noContent().build();
+  }
+
+  public ResponseEntity<String> getPaymentStatus(long paymentId) {
+    String paymentStatus;
+    try {
+      paymentStatus =
+          paymentRepository
+              .findPaymentStatusByPaymentId(paymentId)
+              .orElseThrow(
+                  () -> {
+                    log.error("Payment does not exist with payment id: '{}'", paymentId);
+                    return new PaymentNotFoundException(
+                        "Payment does not exists with payment id :" + paymentId);
+                  });
+    } catch (PaymentNotFoundException ex) {
+      log.error("Payment id '{}' does not exist, get status operation failed", paymentId);
+      throw new RuntimeException(
+          "Get status operation failed, payment " + "'" + paymentId + "'" + " does not exists");
+    }
+    return ResponseEntity.ok(paymentStatus);
+  }
+
+  public ResponseEntity<PaymentResponseDTO> updatePaymentStatus(long paymentID, String status) {
+    Payment payment =
+        paymentRepository
+            .findById(paymentID)
+            .orElseThrow(
+                () -> {
+                  log.error("Payment does not exist with payment id: '{}'", paymentID);
+                  return new PaymentNotFoundException(
+                      "Payment does not exists with payment id :" + paymentID);
+                });
+    payment.setPaymentStatus(status);
+    paymentRepository.save(payment);
+    return ResponseEntity.ok().build();
   }
 }

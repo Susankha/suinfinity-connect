@@ -1,5 +1,6 @@
 package com.suinfinity.payment.dto;
 
+import com.suinfinity.payment.util.PaymentStatus;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotNull;
@@ -34,11 +35,6 @@ public class PaymentDTO {
 
   private LocalDateTime paymentDate;
 
-  @NotNull(message = "Payment status cannot be empty")
-  @Pattern(
-      regexp = "^[A-Za-z][A-Za-z0-9_\\s]+$",
-      message =
-          "Payment status must start with a letter and contain only alphanumeric characters or underscores")
   private String paymentStatus;
 
   public PaymentDTO(String orderId, BigDecimal amount, String paymentMethod, String paymentStatus) {
@@ -46,7 +42,7 @@ public class PaymentDTO {
     this.amount = amount;
     this.paymentMethod = paymentMethod;
     this.paymentDate = getTimeStamp();
-    this.paymentStatus = paymentStatus;
+    this.paymentStatus = PaymentStatus.INITIALIZED.toString();
   }
 
   private LocalDateTime getTimeStamp() {
