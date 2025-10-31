@@ -39,7 +39,7 @@ order-mgt comes with rest APIs to handle order management scenarios.
 
 Swagger UI → [http://localhost:8082/api-docs](http://localhost:8082/api/swagger-ui/index.html)
 
-<img width="752" height="370" alt="order_mgt_swagger" src="https://github.com/user-attachments/assets/078787ce-55df-4764-b4b0-adada7a68cfa" />
+<img width="752" height="370" alt="order_mgt_swagger" src="https://github.com/user-attachments/assets/3cf14f89-03c5-4af6-bd77-083e51d76eb9" />
 
 #### Monitoring with actuator
 
