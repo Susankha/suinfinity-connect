@@ -52,7 +52,8 @@ payment-mgt comes with rest APIs to handle payment management scenarios.
 
 Swagger UI → [http://localhost:8083/api-docs](http://localhost:8083/api/swagger-ui/index.html)
 
-<img alt="payment_mgt_swagger.png" height="370" src="../../../Pictures/Screenshots/spring_boot/suinfinity/payment_mgt_swagger.png" width="752"/>
+<img width="752" height="370" alt="payment_mgt_swagger" src="https://github.com/user-attachments/assets/0741402d-a5d9-4f89-91e1-5b02b2d3744d" />
+
 
 #### Monitoring with actuator
 
