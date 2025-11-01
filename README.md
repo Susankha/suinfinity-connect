@@ -41,6 +41,19 @@ Swagger UI → [http://localhost:8082/api-docs](http://localhost:8082/api/swagge
 
 <img width="752" height="370" alt="order_mgt_swagger" src="https://github.com/user-attachments/assets/3cf14f89-03c5-4af6-bd77-083e51d76eb9" />
 
+
+## Payment Management
+
+This component is responsible to handle payment management of the suinfinity solution:
+
+#### Getting Started
+
+payment-mgt comes with rest APIs to handle payment management scenarios.
+
+Swagger UI → [http://localhost:8083/api-docs](http://localhost:8083/api/swagger-ui/index.html)
+
+<img alt="payment_mgt_swagger.png" height="370" src="../../../Pictures/Screenshots/spring_boot/suinfinity/payment_mgt_swagger.png" width="752"/>
+
 #### Monitoring with actuator
 
 Enabled actuator for monitoring purposes such as service health info, metrics, mappings.
