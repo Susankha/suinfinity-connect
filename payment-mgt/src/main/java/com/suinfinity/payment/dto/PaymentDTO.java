@@ -37,7 +37,7 @@ public class PaymentDTO {
 
   private String paymentStatus;
 
-  public PaymentDTO(String orderId, BigDecimal amount, String paymentMethod, String paymentStatus) {
+  public PaymentDTO(String orderId, BigDecimal amount, String paymentMethod) {
     this.orderId = Long.parseLong(orderId);
     this.amount = amount;
     this.paymentMethod = paymentMethod;
