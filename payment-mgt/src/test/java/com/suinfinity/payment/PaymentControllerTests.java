@@ -162,7 +162,7 @@ public class PaymentControllerTests {
   }
 
   private PaymentDTO getPaymentDTO() {
-    return new PaymentDTO(ORDER_ID, AMOUNT, PAYMENT_METHOD_CASH, PAYMENT_STATUS);
+    return new PaymentDTO(ORDER_ID, AMOUNT, PAYMENT_METHOD_CASH);
   }
 
   private String getJsonPayload(Object order) throws JsonProcessingException {
