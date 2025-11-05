@@ -1,4 +1,4 @@
-package com.suinfinity.user.config;
+package com.suinfinity.iam.config;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 import org.springframework.context.annotation.Bean;
