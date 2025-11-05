@@ -1,7 +1,11 @@
 package com.suinfinity.user;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.suinfinity.iam.config.SecurityConfig;
 import com.suinfinity.user.dto.UserDTO;
 import com.suinfinity.user.dto.UserDTO.Address;
 import com.suinfinity.user.dto.UserResponseDTO;
@@ -12,27 +16,48 @@ import java.util.List;
 import java.util.random.RandomGenerator;
 import java.util.stream.Stream;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 @WebMvcTest
+@AutoConfigureMockMvc
+@Import(SecurityConfig.class)
 @DisplayName("User Operations Test Suite")
 public class UserControllerTests {
 
   private static final String TEST_USER = "test_user";
   private static final String NEW_TEST_USER = "new_test_user";
+  private static final String USER = "admin";
+  private static final String PASSWORD = "admin";
   @MockitoBean UserService userService;
   @Autowired MockMvc mockMvc;
+  @Autowired WebApplicationContext webApplicationContext;
+  PasswordEncoder passwordEncoder;
+
+  @BeforeEach
+  public void setup() {
+    mockMvc =
+        MockMvcBuilders.webAppContextSetup(webApplicationContext).apply(springSecurity()).build();
+    passwordEncoder = new BCryptPasswordEncoder();
+  }
 
   @Test
   public void registerUser_shouldReturns_statusCreated() throws Exception {
@@ -40,10 +65,11 @@ public class UserControllerTests {
     String jsonRequest = getJsonPayload(userDTO);
     Mockito.when(userService.registerUser(userDTO))
         .thenReturn(new ResponseEntity<>(HttpStatus.CREATED));
-
     mockMvc
         .perform(
             MockMvcRequestBuilders.post("/v1/users")
+                .with(httpBasic(USER, PASSWORD))
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonRequest))
         .andExpect(MockMvcResultMatchers.status().isCreated());
@@ -55,7 +81,10 @@ public class UserControllerTests {
     UserResponseDTO userDTO = UserMapper.INSTANCE.toUserResponseDto(user);
     Mockito.when(userService.getUser(user.getName())).thenReturn(ResponseEntity.ok().body(userDTO));
     mockMvc
-        .perform(MockMvcRequestBuilders.get("/v1/users/{user}", user.getName()))
+        .perform(
+            MockMvcRequestBuilders.get("/v1/users/{user}", user.getName())
+                .with(httpBasic(USER, PASSWORD))
+                .with(csrf()))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(MockMvcResultMatchers.jsonPath("$.name", Matchers.startsWith("test")))
         .andExpect(MockMvcResultMatchers.jsonPath("$.address.street", Matchers.notNullValue()));
@@ -67,7 +96,8 @@ public class UserControllerTests {
         Stream.of(getUser()).map(UserMapper.INSTANCE::toUserResponseDto).toList();
     Mockito.when(userService.getUsers()).thenReturn(ResponseEntity.ok(userResponseDTOS));
     mockMvc
-        .perform(MockMvcRequestBuilders.get("/v1/users"))
+        .perform(
+            MockMvcRequestBuilders.get("/v1/users").with(httpBasic(USER, PASSWORD)).with(csrf()))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(MockMvcResultMatchers.jsonPath("$").isNotEmpty());
   }
@@ -85,6 +115,8 @@ public class UserControllerTests {
     mockMvc
         .perform(
             MockMvcRequestBuilders.put("/v1/users/{user}", user.getName())
+                .with(httpBasic(USER, PASSWORD))
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(payload))
         .andExpect(MockMvcResultMatchers.status().isOk())
@@ -96,7 +128,10 @@ public class UserControllerTests {
     String userName = TEST_USER;
     Mockito.when(userService.deleteUser(userName)).thenReturn(ResponseEntity.noContent().build());
     mockMvc
-        .perform(MockMvcRequestBuilders.delete("/v1/users/{user}", userName))
+        .perform(
+            MockMvcRequestBuilders.delete("/v1/users/{user}", userName)
+                .with(httpBasic(USER, PASSWORD))
+                .with(csrf()))
         .andExpect(MockMvcResultMatchers.status().isNoContent());
   }
 

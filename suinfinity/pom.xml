@@ -21,6 +21,7 @@
     <module>../user-mgt</module>
     <module>../order-mgt</module>
     <module>../payment-mgt</module>
+    <module>../iam-mgt</module>
   </modules>
   <build>
     <plugins>
