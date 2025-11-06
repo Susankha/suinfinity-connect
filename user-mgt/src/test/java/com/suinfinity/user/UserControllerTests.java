@@ -29,6 +29,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -40,6 +41,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 @WebMvcTest
 @AutoConfigureMockMvc
 @Import(SecurityConfig.class)
+@WithMockUser(username = "USER", roles = "ADMIN")
 @DisplayName("User Operations Test Suite")
 public class UserControllerTests {
 
