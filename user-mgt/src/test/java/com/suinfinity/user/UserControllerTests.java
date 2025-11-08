@@ -1,5 +1,7 @@
 package com.suinfinity.user;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
@@ -48,7 +50,10 @@ public class UserControllerTests {
   private static final String TEST_USER = "test_user";
   private static final String NEW_TEST_USER = "new_test_user";
   private static final String USER = "admin";
-  private static final String PASSWORD = "admin";
+  private static final String ROLE = "ADMIN";
+  private static final String PASSWORD = "Ad$n8admin";
+  private static final String EMAIL = "admin@test.mail";
+  private static final boolean IS_ENABLE = true;
   @MockitoBean UserService userService;
   @Autowired MockMvc mockMvc;
   @Autowired WebApplicationContext webApplicationContext;
@@ -63,7 +68,7 @@ public class UserControllerTests {
 
   @Test
   public void registerUser_shouldReturns_statusCreated() throws Exception {
-    UserDTO userDTO = new UserDTO(TEST_USER, getAddress());
+    UserDTO userDTO = new UserDTO(TEST_USER, PASSWORD, ROLE, EMAIL, IS_ENABLE, getAddress());
     String jsonRequest = getJsonPayload(userDTO);
     Mockito.when(userService.registerUser(userDTO))
         .thenReturn(new ResponseEntity<>(HttpStatus.CREATED));
@@ -80,8 +85,9 @@ public class UserControllerTests {
   @Test
   public void getUser_shouldReturns_User() throws Exception {
     User user = this.getUser();
-    UserResponseDTO userDTO = UserMapper.INSTANCE.toUserResponseDto(user);
-    Mockito.when(userService.getUser(user.getName())).thenReturn(ResponseEntity.ok().body(userDTO));
+    UserResponseDTO userResponseDto = UserMapper.INSTANCE.toUserResponseDto(user);
+    Mockito.when(userService.getUser(user.getName()))
+        .thenReturn(ResponseEntity.ok().body(userResponseDto));
     mockMvc
         .perform(
             MockMvcRequestBuilders.get("/v1/users/{user}", user.getName())
@@ -106,13 +112,11 @@ public class UserControllerTests {
 
   @Test
   public void updateUser_shouldReturns_updatedUser() throws Exception {
-    UserDTO userDTO = new UserDTO(TEST_USER, getAddress());
+    UserDTO userDTO = new UserDTO(NEW_TEST_USER, PASSWORD, ROLE, EMAIL, IS_ENABLE, getAddress());
     String payload = getJsonPayload(userDTO);
     User user = UserMapper.INSTANCE.toUser(userDTO);
-    user.setName(NEW_TEST_USER);
-    user.setAddress(userDTO.getAddress());
     UserResponseDTO userResponseDTO = UserMapper.INSTANCE.toUserResponseDto(user);
-    Mockito.when(userService.updateUser(NEW_TEST_USER, userDTO))
+    Mockito.when(userService.updateUser(anyString(), any(UserDTO.class)))
         .thenReturn(ResponseEntity.ok().body(userResponseDTO));
     mockMvc
         .perform(
@@ -141,6 +145,10 @@ public class UserControllerTests {
     User user = new User();
     user.setUserId(RandomGenerator.getDefault().nextLong());
     user.setName(TEST_USER);
+    user.setPassword(PASSWORD);
+    user.setRole(ROLE);
+    user.setEmail(EMAIL);
+    user.setIsEnable(IS_ENABLE);
     user.setAddress(this.getAddress());
     return user;
   }

@@ -1,9 +1,12 @@
 package com.suinfinity.user.dto;
 
+import com.suinfinity.iam.config.SecurityConfig;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
@@ -16,11 +19,37 @@ public class UserDTO {
           "Name must start with a letter and contain only 8 to 20 alphanumeric characters or underscores")
   private String name;
 
+  @NotBlank(message = "Password cannot be empty")
+  @Pattern(
+      regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$",
+      message =
+          "Password must contain at least one digit, one lowercase, one uppercase, and one special character")
+  private String password;
+
+  @NotBlank(message = "Role cannot be empty")
+  private String role;
+
+  @NotBlank(message = "Email cannot be empty")
+  private String email;
+
+  @NotNull(message = "Enable cannot be null")
+  private Boolean isEnable;
+
   @Valid private Address address;
 
-  public UserDTO(String name, Address address) {
+  public UserDTO(
+      String name, String password, String role, String email, Boolean isEnable, Address address) {
     this.name = name;
+    this.password = SecurityConfig.passwordEncoder().encode(password);
+    this.role = Role.valueOf(role.toUpperCase()).toString();
+    this.email = email;
+    this.isEnable = isEnable;
     this.address = address;
+  }
+
+  enum Role {
+    ADMIN,
+    USER
   }
 
   @Data
