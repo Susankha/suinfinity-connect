@@ -37,6 +37,7 @@ public class SecurityConfig {
                     .requestMatchers(
                         PathPatternRequestMatcher.withDefaults().matcher("/v1/users/{name}"))
                     .hasRole("ADMIN")
+                    .requestMatchers("/api/swagger-ui/**").anonymous()
                     .anyRequest()
                     .denyAll())
         .httpBasic(withDefaults());
@@ -47,7 +48,7 @@ public class SecurityConfig {
   public UserDetailsService userDetailsService() {
     UserDetails admin =
         User.withUsername("admin")
-            .password(passwordEncoder().encode("admin"))
+            .password(passwordEncoder().encode("Ad$n8admin"))
             .roles("ADMIN")
             .build();
 

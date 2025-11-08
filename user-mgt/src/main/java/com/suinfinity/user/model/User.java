@@ -7,8 +7,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 @Setter
 @Getter
@@ -21,6 +23,16 @@ public class User {
   private Long userId;
 
   private String name;
+
+  private String password;
+
+  private String role;
+
+  @Email
+  private String email;
+
+  @ColumnDefault("true")
+  private Boolean isEnable;
 
   @Embedded private Address address;
 }

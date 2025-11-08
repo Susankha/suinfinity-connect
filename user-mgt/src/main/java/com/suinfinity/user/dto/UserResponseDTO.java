@@ -9,5 +9,9 @@ public class UserResponseDTO {
 
   private Long userId;
   private String name;
+  private String password;
+  private String role;
+  private String email;
+  private Boolean isEnable;
   @Embedded private Address address;
 }
