@@ -37,9 +37,10 @@ public class SecurityConfig {
                     .requestMatchers(
                         PathPatternRequestMatcher.withDefaults().matcher("/v1/users/{name}"))
                     .hasRole("ADMIN")
-                    .requestMatchers("/api/swagger-ui/**").anonymous()
+                    .requestMatchers("/swagger-ui/**", "/api-docs/**")
+                    .permitAll()
                     .anyRequest()
-                    .denyAll())
+                    .authenticated())
         .httpBasic(withDefaults());
     return httpSecurity.build();
   }
