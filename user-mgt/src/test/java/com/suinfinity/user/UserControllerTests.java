@@ -7,7 +7,7 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.suinfinity.iam.config.SecurityConfig;
+import com.suinfinity.user.config.SecurityConfig;
 import com.suinfinity.user.dto.UserDTO;
 import com.suinfinity.user.dto.UserDTO.Address;
 import com.suinfinity.user.dto.UserResponseDTO;

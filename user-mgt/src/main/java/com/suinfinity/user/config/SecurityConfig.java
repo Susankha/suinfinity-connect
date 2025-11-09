@@ -1,8 +1,10 @@
-package com.suinfinity.iam.config;
+package com.suinfinity.user.config;
 
 import static org.springframework.security.config.Customizer.withDefaults;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -40,7 +42,7 @@ public class SecurityConfig {
                     .requestMatchers("/swagger-ui/**", "/api-docs/**")
                     .permitAll()
                     .anyRequest()
-                    .authenticated())
+                    .denyAll())
         .httpBasic(withDefaults());
     return httpSecurity.build();
   }
@@ -56,5 +58,13 @@ public class SecurityConfig {
     UserDetails user =
         User.withUsername("user").password(passwordEncoder().encode("user")).roles("USER").build();
     return new InMemoryUserDetailsManager(admin, user);
+  }
+
+  @Bean
+  public DaoAuthenticationProvider authenticationProvider(
+      UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+    DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
+    authProvider.setPasswordEncoder(passwordEncoder());
+    return authProvider;
   }
 }
