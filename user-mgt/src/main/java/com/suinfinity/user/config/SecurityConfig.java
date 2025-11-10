@@ -41,8 +41,11 @@ public class SecurityConfig {
                     .hasRole("ADMIN")
                     .requestMatchers("/swagger-ui/**", "/api-docs/**")
                     .permitAll()
+                    .requestMatchers("/v1/login")
+                    .authenticated()
                     .anyRequest()
                     .denyAll())
+        .formLogin(withDefaults())
         .httpBasic(withDefaults());
     return httpSecurity.build();
   }
