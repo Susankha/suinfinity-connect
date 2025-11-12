@@ -72,6 +72,10 @@ public class UserService implements UserDetailsService {
                 });
 
     user.setName(userDTO.getName());
+    user.setPassword(userDTO.getPassword());
+    user.setRole(userDTO.getRole());
+    user.setEmail(userDTO.getEmail());
+    user.setIsEnable(userDTO.getIsEnable());
     user.setAddress(userDTO.getAddress());
     try {
       userRepository.save(user);
