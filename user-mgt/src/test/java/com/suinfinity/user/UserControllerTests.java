@@ -14,6 +14,7 @@ import com.suinfinity.user.dto.UserResponseDTO;
 import com.suinfinity.user.mapper.UserMapper;
 import com.suinfinity.user.model.User;
 import com.suinfinity.user.service.UserService;
+import com.suinfinity.user.util.RoleEnum;
 import java.util.List;
 import java.util.random.RandomGenerator;
 import java.util.stream.Stream;
@@ -50,7 +51,7 @@ public class UserControllerTests {
   private static final String TEST_USER = "test_user";
   private static final String NEW_TEST_USER = "new_test_user";
   private static final String USER = "admin";
-  private static final String ROLE = "ADMIN";
+  private static final RoleEnum ROLE = RoleEnum.ADMIN;
   private static final String PASSWORD = "Ad$n8admin";
   private static final String EMAIL = "admin@test.mail";
   private static final boolean IS_ENABLE = true;
@@ -68,9 +69,10 @@ public class UserControllerTests {
 
   @Test
   public void registerUser_shouldReturns_statusCreated() throws Exception {
-    UserDTO userDTO = new UserDTO(TEST_USER, PASSWORD, ROLE, EMAIL, IS_ENABLE, getAddress());
+    UserDTO userDTO =
+        new UserDTO(TEST_USER, PASSWORD, ROLE.toString(), EMAIL, IS_ENABLE, getAddress());
     String jsonRequest = getJsonPayload(userDTO);
-    Mockito.when(userService.registerUser(userDTO))
+    Mockito.when(userService.registerUser(any(UserDTO.class)))
         .thenReturn(new ResponseEntity<>(HttpStatus.CREATED));
     mockMvc
         .perform(
@@ -112,7 +114,8 @@ public class UserControllerTests {
 
   @Test
   public void updateUser_shouldReturns_updatedUser() throws Exception {
-    UserDTO userDTO = new UserDTO(NEW_TEST_USER, PASSWORD, ROLE, EMAIL, IS_ENABLE, getAddress());
+    UserDTO userDTO =
+        new UserDTO(NEW_TEST_USER, PASSWORD, ROLE.toString(), EMAIL, IS_ENABLE, getAddress());
     String payload = getJsonPayload(userDTO);
     User user = UserMapper.INSTANCE.toUser(userDTO);
     UserResponseDTO userResponseDTO = UserMapper.INSTANCE.toUserResponseDto(user);
