@@ -30,27 +30,32 @@ public class UserController {
 
   @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
+  @PreAuthorize("hasAuthority('ALL')")
   public ResponseEntity<?> registerUser(@Valid @RequestBody UserDTO userDTO) {
     return userService.registerUser(userDTO);
   }
 
   @GetMapping(value = "/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @PreAuthorize("hasAuthority('ALL')")
   public ResponseEntity<UserResponseDTO> getUser(@NotBlank @PathVariable String name) {
     return userService.getUser(name);
   }
 
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+  @PreAuthorize("hasAuthority('ALL')")
   public ResponseEntity<List<UserResponseDTO>> getUsers() {
     return userService.getUsers();
   }
 
   @PutMapping(value = "/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @PreAuthorize("hasAuthority('ALL')")
   public ResponseEntity<UserResponseDTO> updateUser(
       @NotBlank @PathVariable String name, @Valid @RequestBody UserDTO user) {
     return userService.updateUser(name, user);
   }
 
   @DeleteMapping(value = "/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @PreAuthorize("hasAuthority('ALL')")
   public ResponseEntity<?> deleteUser(@NotBlank @PathVariable String name) {
     return userService.deleteUser(name);
   }

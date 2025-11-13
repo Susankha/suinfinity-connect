@@ -1,25 +1,28 @@
 package com.suinfinity.user.model;
 
 import com.suinfinity.user.dto.UserDTO.Address;
+import com.suinfinity.user.util.RoleEnum;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import java.util.Collection;
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-@Setter
-@Getter
 @Entity
 @Table(name = "User")
+@Setter
+@Getter
 public class User implements UserDetails {
 
   @Id
@@ -30,7 +33,9 @@ public class User implements UserDetails {
 
   private String password;
 
-  private String role;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false, unique = true)
+  private RoleEnum role;
 
   @Email private String email;
 
@@ -41,12 +46,12 @@ public class User implements UserDetails {
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return List.of();
+    return Role.builder().build().getAuthorities();
   }
 
   @Override
   public String getUsername() {
-    return "";
+    return name;
   }
 
   @Override
