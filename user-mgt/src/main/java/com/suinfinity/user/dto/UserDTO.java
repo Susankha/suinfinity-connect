@@ -1,6 +1,7 @@
 package com.suinfinity.user.dto;
 
 import com.suinfinity.user.config.SecurityConfig;
+import com.suinfinity.user.exception.RoleNotFoundException;
 import com.suinfinity.user.util.RoleEnum;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.Valid;
@@ -8,8 +9,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
+import lombok.extern.log4j.Log4j2;
 
 @Data
+@Log4j2
 public class UserDTO {
 
   @NotBlank(message = "Name cannot be empty")
@@ -41,7 +44,10 @@ public class UserDTO {
       String name, String password, String role, String email, Boolean isEnable, Address address) {
     this.name = name;
     this.password = SecurityConfig.passwordEncoder().encode(password);
-    this.role = RoleEnum.valueOf(role);
+    this.role =
+        RoleEnum.getValueOf(role)
+            .orElseThrow(
+                () -> new RoleNotFoundException("Role " + "'" + role + "'" + " does not exist"));
     this.email = email;
     this.isEnable = isEnable;
     this.address = address;
