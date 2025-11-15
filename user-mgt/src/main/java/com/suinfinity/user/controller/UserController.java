@@ -23,39 +23,38 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/v1/users")
-@PreAuthorize("hasRole('ADMIN')")
 public class UserController {
 
   @Autowired private UserService userService;
 
   @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
-  @PreAuthorize("hasAuthority('ALL')")
+  @PreAuthorize("hasAnyRole('ADMIN','USER') or hasAnyAuthority('ALL','CREATE_USER')")
   public ResponseEntity<?> registerUser(@Valid @RequestBody UserDTO userDTO) {
     return userService.registerUser(userDTO);
   }
 
   @GetMapping(value = "/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
-  @PreAuthorize("hasAuthority('ALL')")
+  @PreAuthorize("hasAnyRole('ADMIN','USER') or hasAnyAuthority('ALL','READ_USER')")
   public ResponseEntity<UserResponseDTO> getUser(@NotBlank @PathVariable String name) {
     return userService.getUser(name);
   }
 
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-  @PreAuthorize("hasAuthority('ALL')")
+  @PreAuthorize("hasRole('ADMIN') or hasAnyAuthority('ALL')")
   public ResponseEntity<List<UserResponseDTO>> getUsers() {
     return userService.getUsers();
   }
 
   @PutMapping(value = "/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
-  @PreAuthorize("hasAuthority('ALL')")
+  @PreAuthorize("hasAnyAuthority('ALL','UPDATE_USER')")
   public ResponseEntity<UserResponseDTO> updateUser(
       @NotBlank @PathVariable String name, @Valid @RequestBody UserDTO user) {
     return userService.updateUser(name, user);
   }
 
   @DeleteMapping(value = "/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
-  @PreAuthorize("hasAuthority('ALL')")
+  @PreAuthorize("hasAnyAuthority('ALL','DELETE_USER')")
   public ResponseEntity<?> deleteUser(@NotBlank @PathVariable String name) {
     return userService.deleteUser(name);
   }
