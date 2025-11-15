@@ -2,6 +2,10 @@ package com.suinfinity.user.util;
 
 public enum AuthorityEnum {
   ALL,
+  CREATE_USER,
+  READ_USER,
+  UPDATE_USER,
+  DELETE_USER,
   CREATE_ORDER,
   READ_ORDER,
   UPDATE_ORDER,

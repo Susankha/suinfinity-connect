@@ -3,7 +3,6 @@ package com.suinfinity.user.config;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 import com.suinfinity.user.model.Authority;
-import com.suinfinity.user.model.Role;
 import com.suinfinity.user.util.AuthorityEnum;
 import com.suinfinity.user.util.RoleEnum;
 import org.springframework.context.annotation.Bean;
@@ -40,11 +39,9 @@ public class SecurityConfig {
                 request
                     .requestMatchers("/v1/users")
                     .hasAuthority(AuthorityEnum.ALL.toString())
-//                    .hasRole(RoleEnum.ADMIN.toString())
                     .requestMatchers(
                         PathPatternRequestMatcher.withDefaults().matcher("/v1/users/{name}"))
                     .hasAuthority(AuthorityEnum.ALL.toString())
-                    //.hasRole(RoleEnum.ADMIN.toString())
                     .requestMatchers("/swagger-ui/**", "/api-docs/**")
                     .permitAll()
                     .requestMatchers("/v1/login")
@@ -70,10 +67,9 @@ public class SecurityConfig {
             .password(passwordEncoder().encode("user"))
             .roles(RoleEnum.USER.toString())
             .authorities(
-                Authority.builder().authorityEnum(AuthorityEnum.CREATE_ORDER).build(),
-                Authority.builder().authorityEnum(AuthorityEnum.READ_ORDER).build(),
-                Authority.builder().authorityEnum(AuthorityEnum.UPDATE_ORDER).build(),
-                Authority.builder().authorityEnum(AuthorityEnum.DELETE_ORDER).build())
+                Authority.builder().authorityEnum(AuthorityEnum.CREATE_USER).build(),
+                Authority.builder().authorityEnum(AuthorityEnum.READ_USER).build(),
+                Authority.builder().authorityEnum(AuthorityEnum.UPDATE_USER).build())
             .build();
     return new InMemoryUserDetailsManager(admin, user);
   }
