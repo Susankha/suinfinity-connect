@@ -8,7 +8,6 @@ import com.suinfinity.user.model.User;
 import com.suinfinity.user.repository.RoleRepository;
 import com.suinfinity.user.repository.UserRepository;
 import com.suinfinity.user.util.RoleEnum;
-import java.math.BigInteger;
 import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +27,8 @@ public class UserService implements UserDetailsService {
 
   public ResponseEntity<?> registerUser(UserDTO userDTO) {
     User mappedUser = UserMapper.INSTANCE.toUser(userDTO);
-    //long role = RoleEnum.valueOf(userDTO.getRole()).ordinal();
-    //BigInteger role = BigInteger.valueOf(RoleEnum.valueOf(userDTO.getRole()).ordinal());
-    //mappedUser.setRoleId(role);
+    long roleId = RoleEnum.valueOf(userDTO.getRole()).ordinal();
+    mappedUser.setRoleId(roleId);
     try {
       userRepository.save(mappedUser);
 
@@ -81,7 +79,8 @@ public class UserService implements UserDetailsService {
 
     user.setName(userDTO.getName());
     user.setPassword(userDTO.getPassword());
-    //user.setRoleId(user.getRoleId());
+    long roleId = RoleEnum.valueOf(userDTO.getRole()).ordinal();
+    user.setRoleId(roleId);
     user.setEmail(userDTO.getEmail());
     user.setIsEnable(userDTO.getIsEnable());
     user.setAddress(userDTO.getAddress());

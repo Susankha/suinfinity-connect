@@ -1,17 +1,11 @@
 package com.suinfinity.user.model;
 
 import com.suinfinity.user.dto.UserDTO.Address;
-import com.suinfinity.user.util.RoleEnum;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import java.util.Collection;
@@ -35,17 +29,7 @@ public class User implements UserDetails {
 
   private String password;
 
-  //  @Enumerated(EnumType.STRING)
-  //  @Column(nullable = false, unique = true)
-  //  private RoleEnum role;
-  //, referencedColumnName = "role_id", nullable = false
-
-  @Enumerated(EnumType.STRING)
-  private RoleEnum role;
-  //@ManyToOne(cascade = CascadeType.REMOVE)
-  //private RoleEnum role;
-  //@JoinColumn(name = "role_id")
-
+  private Long roleId;
 
   @Email private String email;
 

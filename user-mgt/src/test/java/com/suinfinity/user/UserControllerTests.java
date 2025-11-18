@@ -12,7 +12,6 @@ import com.suinfinity.user.dto.UserDTO;
 import com.suinfinity.user.dto.UserDTO.Address;
 import com.suinfinity.user.dto.UserResponseDTO;
 import com.suinfinity.user.mapper.UserMapper;
-import com.suinfinity.user.model.Role;
 import com.suinfinity.user.model.User;
 import com.suinfinity.user.service.UserService;
 import com.suinfinity.user.util.RoleEnum;
@@ -52,7 +51,7 @@ public class UserControllerTests {
   private static final String TEST_USER = "test_user";
   private static final String NEW_TEST_USER = "new_test_user";
   private static final String USER = "admin";
-  private static final RoleEnum ROLE = RoleEnum.ADMIN;
+  private static final long ROLE_ID = RoleEnum.ADMIN.ordinal();
   private static final String PASSWORD = "Ad$n8admin";
   private static final String EMAIL = "admin@test.mail";
   private static final boolean IS_ENABLE = true;
@@ -149,15 +148,15 @@ public class UserControllerTests {
     user.setUserId(RandomGenerator.getDefault().nextLong());
     user.setName(TEST_USER);
     user.setPassword(PASSWORD);
-    user.setRole(getRole());
+    user.setRoleId(ROLE_ID);
     user.setEmail(EMAIL);
     user.setIsEnable(IS_ENABLE);
     user.setAddress(this.getAddress());
     return user;
   }
 
-  private RoleEnum getRole() {
-    return RoleEnum.ADMIN;
+  private String getRole() {
+    return RoleEnum.ADMIN.toString();
   }
 
   private Address getAddress() {

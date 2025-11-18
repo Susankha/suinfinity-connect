@@ -1,8 +1,6 @@
 package com.suinfinity.user.dto;
 
 import com.suinfinity.user.config.SecurityConfig;
-import com.suinfinity.user.model.Role;
-import com.suinfinity.user.util.RoleEnum;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -29,8 +27,8 @@ public class UserDTO {
           "Password must contain at least one digit, one lowercase, one uppercase, and one special character")
   private String password;
 
-  //@NotBlank(message = "Role cannot be empty")
-  private RoleEnum role;
+  @NotBlank(message = "Role cannot be empty")
+  private String role;
 
   @NotBlank(message = "Email cannot be empty")
   private String email;
@@ -41,7 +39,7 @@ public class UserDTO {
   @Valid private Address address;
 
   public UserDTO(
-      String name, String password, RoleEnum role, String email, Boolean isEnable, Address address) {
+      String name, String password, String role, String email, Boolean isEnable, Address address) {
     this.name = name;
     this.password = SecurityConfig.passwordEncoder().encode(password);
     this.role = role;
