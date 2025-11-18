@@ -59,7 +59,7 @@ public class SecurityConfig {
         User.withUsername("admin")
             .password(passwordEncoder().encode("Ad$n8admin"))
             .roles(RoleEnum.ADMIN.toString())
-            .authorities(Authority.builder().authorityEnum(AuthorityEnum.ALL).build())
+            .authorities(Authority.builder().authority(AuthorityEnum.ALL).build())
             .build();
 
     UserDetails user =
@@ -67,9 +67,9 @@ public class SecurityConfig {
             .password(passwordEncoder().encode("user"))
             .roles(RoleEnum.USER.toString())
             .authorities(
-                Authority.builder().authorityEnum(AuthorityEnum.CREATE_USER).build(),
-                Authority.builder().authorityEnum(AuthorityEnum.READ_USER).build(),
-                Authority.builder().authorityEnum(AuthorityEnum.UPDATE_USER).build())
+                Authority.builder().authority(AuthorityEnum.CREATE_USER).build(),
+                Authority.builder().authority(AuthorityEnum.READ_USER).build(),
+                Authority.builder().authority(AuthorityEnum.UPDATE_USER).build())
             .build();
     return new InMemoryUserDetailsManager(admin, user);
   }

@@ -1,21 +1,33 @@
 package com.suinfinity.user.util;
 
-import java.util.Optional;
+import jakarta.persistence.Embedded;
+import java.util.HashMap;
+import java.util.Map;
+import lombok.Data;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Getter
 public enum RoleEnum {
-  ADMIN,
-  USER;
+  ADMIN(1),
+  USER(2);
 
-  public static Optional<RoleEnum> getValueOf(String role) {
-    try {
-      return Optional.of(RoleEnum.valueOf(role.toUpperCase()));
-    } catch (IllegalArgumentException e) {
-      log.error("Role '{}' does not exist ", role);
-      return Optional.empty();
+  private static final Map<Integer, RoleEnum> enumMap = new HashMap<>();
+
+  static {
+    for (RoleEnum enumConstant : RoleEnum.values()) {
+      enumMap.put(enumConstant.getValue(), enumConstant);
     }
+  }
+
+  private final int value;
+
+  RoleEnum(int value) {
+    this.value = value;
+  }
+
+  public static RoleEnum fromInt(int intValue) {
+    return enumMap.get(intValue);
   }
 }

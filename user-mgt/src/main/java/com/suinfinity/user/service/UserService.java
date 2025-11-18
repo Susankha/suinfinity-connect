@@ -5,7 +5,10 @@ import com.suinfinity.user.dto.UserResponseDTO;
 import com.suinfinity.user.exception.UserNotFoundException;
 import com.suinfinity.user.mapper.UserMapper;
 import com.suinfinity.user.model.User;
+import com.suinfinity.user.repository.RoleRepository;
 import com.suinfinity.user.repository.UserRepository;
+import com.suinfinity.user.util.RoleEnum;
+import java.math.BigInteger;
 import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +24,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService implements UserDetailsService {
 
   @Autowired private UserRepository userRepository;
+  @Autowired private RoleRepository roleRepository;
 
   public ResponseEntity<?> registerUser(UserDTO userDTO) {
     User mappedUser = UserMapper.INSTANCE.toUser(userDTO);
+    //long role = RoleEnum.valueOf(userDTO.getRole()).ordinal();
+    //BigInteger role = BigInteger.valueOf(RoleEnum.valueOf(userDTO.getRole()).ordinal());
+    //mappedUser.setRoleId(role);
     try {
       userRepository.save(mappedUser);
+
     } catch (RuntimeException ex) {
       log.error("User {} registration failed ", mappedUser.getName());
       throw new RuntimeException(
@@ -73,7 +81,7 @@ public class UserService implements UserDetailsService {
 
     user.setName(userDTO.getName());
     user.setPassword(userDTO.getPassword());
-    user.setRole(userDTO.getRole());
+    //user.setRoleId(user.getRoleId());
     user.setEmail(userDTO.getEmail());
     user.setIsEnable(userDTO.getIsEnable());
     user.setAddress(userDTO.getAddress());

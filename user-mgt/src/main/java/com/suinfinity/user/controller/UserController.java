@@ -54,7 +54,7 @@ public class UserController {
   }
 
   @DeleteMapping(value = "/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
-  @PreAuthorize("hasAnyAuthority('ALL','DELETE_USER')")
+  @PreAuthorize("hasRole('ADMIN') or hasAnyAuthority('ALL','DELETE_USER')")
   public ResponseEntity<?> deleteUser(@NotBlank @PathVariable String name) {
     return userService.deleteUser(name);
   }
