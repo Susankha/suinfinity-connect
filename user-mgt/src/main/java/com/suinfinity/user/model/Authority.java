@@ -30,11 +30,11 @@ public class Authority implements GrantedAuthority {
   private Long authorityId;
 
   @Enumerated(EnumType.STRING)
-  @Column(nullable = false)
-  private AuthorityEnum authorityEnum;
+  @Column(name = "authority", nullable = false)
+  private AuthorityEnum authority;
 
   @Override
   public String getAuthority() {
-    return authorityEnum.name();
+    return authority.name();
   }
 }
