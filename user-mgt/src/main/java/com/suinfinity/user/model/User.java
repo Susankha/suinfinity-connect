@@ -1,14 +1,20 @@
 package com.suinfinity.user.model;
 
 import com.suinfinity.user.dto.UserDTO.Address;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import java.util.Collection;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
@@ -37,6 +43,13 @@ public class User implements UserDetails {
   private Boolean isEnable;
 
   @Embedded private Address address;
+
+  @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+  @JoinTable(
+      name = "user_role_assignment",
+      joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "userId"),
+      inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "roleId"))
+  private List<Role> roles;
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -4,10 +4,12 @@ import com.suinfinity.user.dto.UserDTO;
 import com.suinfinity.user.dto.UserResponseDTO;
 import com.suinfinity.user.exception.UserNotFoundException;
 import com.suinfinity.user.mapper.UserMapper;
+import com.suinfinity.user.model.Role;
 import com.suinfinity.user.model.User;
 import com.suinfinity.user.repository.RoleRepository;
 import com.suinfinity.user.repository.UserRepository;
 import com.suinfinity.user.util.RoleEnum;
+import java.util.Collections;
 import java.util.List;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +29,17 @@ public class UserService implements UserDetailsService {
 
   public ResponseEntity<?> registerUser(UserDTO userDTO) {
     User mappedUser = UserMapper.INSTANCE.toUser(userDTO);
-    long roleId = RoleEnum.valueOf(userDTO.getRole()).ordinal();
+    long roleId = RoleEnum.valueOf(userDTO.getRole()).getValue();
+    Role role =
+        roleRepository
+            .findById(roleId)
+            .orElseThrow(
+                () -> {
+                  log.error("Role '{}' does not exist ", userDTO.getRole());
+                  return new RuntimeException("Role not found");
+                });
     mappedUser.setRoleId(roleId);
+    mappedUser.setRoles(Collections.singletonList(role));
     try {
       userRepository.save(mappedUser);
 
