@@ -4,10 +4,13 @@ import com.suinfinity.user.dto.UserDTO;
 import com.suinfinity.user.dto.UserResponseDTO;
 import com.suinfinity.user.exception.UserNotFoundException;
 import com.suinfinity.user.mapper.UserMapper;
+import com.suinfinity.user.model.Authority;
 import com.suinfinity.user.model.Role;
 import com.suinfinity.user.model.User;
+import com.suinfinity.user.repository.AuthorityRepository;
 import com.suinfinity.user.repository.RoleRepository;
 import com.suinfinity.user.repository.UserRepository;
+import com.suinfinity.user.util.AuthorityEnum;
 import com.suinfinity.user.util.RoleEnum;
 import java.util.Collections;
 import java.util.List;
@@ -26,18 +29,15 @@ public class UserService implements UserDetailsService {
 
   @Autowired private UserRepository userRepository;
   @Autowired private RoleRepository roleRepository;
+  @Autowired private AuthorityRepository authorityRepository;
 
   public ResponseEntity<?> registerUser(UserDTO userDTO) {
     User mappedUser = UserMapper.INSTANCE.toUser(userDTO);
     long roleId = RoleEnum.valueOf(userDTO.getRole()).getValue();
-    Role role =
-        roleRepository
-            .findById(roleId)
-            .orElseThrow(
-                () -> {
-                  log.error("Role '{}' does not exist ", userDTO.getRole());
-                  return new RuntimeException("Role not found");
-                });
+    Role role = this.getRole(roleId, userDTO.getRole());
+    long authorityId = AuthorityEnum.CREATE_USER.getValue();
+    Authority authority = this.getAuthority(authorityId);
+    role.setAuthorities(Collections.singletonList(authority));
     mappedUser.setRoleId(roleId);
     mappedUser.setRoles(Collections.singletonList(role));
     try {
@@ -113,6 +113,30 @@ public class UserService implements UserDetailsService {
           "Delete operation failed, User " + "'" + userName + "'" + " does not exist");
     }
     return ResponseEntity.noContent().build();
+  }
+
+  private Role getRole(long roleId, String name) {
+    Role role =
+        roleRepository
+            .findById(roleId)
+            .orElseThrow(
+                () -> {
+                  log.error("Role '{}' does not exist ", name);
+                  return new RuntimeException("Role not found");
+                });
+    return role;
+  }
+
+  private Authority getAuthority(long authorityId) {
+    Authority authority =
+        authorityRepository
+            .findById(authorityId)
+            .orElseThrow(
+                () -> {
+                  log.error("Authority '{}' does not exist ", AuthorityEnum.CREATE_USER.name());
+                  return new RuntimeException("Authority not found");
+                });
+    return authority;
   }
 
   @Override
