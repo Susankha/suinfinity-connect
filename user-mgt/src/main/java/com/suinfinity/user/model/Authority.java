@@ -30,7 +30,7 @@ public class Authority implements GrantedAuthority {
   private Long authorityId;
 
   @Enumerated(EnumType.STRING)
-  @Column(name = "authority", nullable = false)
+  @Column(nullable = false, unique = true)
   private AuthorityEnum authority;
 
   @Override
