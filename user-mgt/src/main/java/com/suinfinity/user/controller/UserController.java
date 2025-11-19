@@ -29,13 +29,13 @@ public class UserController {
 
   @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
-  @PreAuthorize("hasAnyRole('ADMIN','USER') or hasAnyAuthority('ALL','CREATE_USER')")
+  @PreAuthorize("hasAnyRole('USER') or hasAnyAuthority('ALL','CREATE_USER')")
   public ResponseEntity<?> registerUser(@Valid @RequestBody UserDTO userDTO) {
     return userService.registerUser(userDTO);
   }
 
   @GetMapping(value = "/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
-  @PreAuthorize("hasAnyRole('ADMIN','USER') or hasAnyAuthority('ALL','READ_USER')")
+  @PreAuthorize("hasAnyRole('USER') or hasAnyAuthority('ALL','READ_USER')")
   public ResponseEntity<UserResponseDTO> getUser(@NotBlank @PathVariable String name) {
     return userService.getUser(name);
   }
