@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import java.util.Set;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 
@@ -27,8 +28,8 @@ public class UserDTO {
           "Password must contain at least one digit, one lowercase, one uppercase, and one special character")
   private String password;
 
-  @NotBlank(message = "Role cannot be empty")
-  private String role;
+  @NotNull(message = "Role cannot be empty")
+  private Set<String> roles;
 
   @NotBlank(message = "Email cannot be empty")
   private String email;
@@ -39,10 +40,10 @@ public class UserDTO {
   @Valid private Address address;
 
   public UserDTO(
-      String name, String password, String role, String email, Boolean isEnable, Address address) {
+      String name, String password, String[] roles, String email, Boolean isEnable, Address address) {
     this.name = name;
     this.password = SecurityConfig.passwordEncoder().encode(password);
-    this.role = role;
+    this.roles = Set.of(roles);
     this.email = email;
     this.isEnable = isEnable;
     this.address = address;

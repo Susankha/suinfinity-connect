@@ -69,7 +69,7 @@ public class UserControllerTests {
 
   @Test
   public void registerUser_shouldReturns_statusCreated() throws Exception {
-    UserDTO userDTO = new UserDTO(TEST_USER, PASSWORD, getRole(), EMAIL, IS_ENABLE, getAddress());
+    UserDTO userDTO = new UserDTO(TEST_USER, PASSWORD, getRoles(), EMAIL, IS_ENABLE, getAddress());
     String jsonRequest = getJsonPayload(userDTO);
     Mockito.when(userService.registerUser(any(UserDTO.class)))
         .thenReturn(new ResponseEntity<>(HttpStatus.CREATED));
@@ -114,7 +114,7 @@ public class UserControllerTests {
   @Test
   public void updateUser_shouldReturns_updatedUser() throws Exception {
     UserDTO userDTO =
-        new UserDTO(NEW_TEST_USER, PASSWORD, getRole(), EMAIL, IS_ENABLE, getAddress());
+        new UserDTO(NEW_TEST_USER, PASSWORD, getRoles(), EMAIL, IS_ENABLE, getAddress());
     String payload = getJsonPayload(userDTO);
     User user = UserMapper.INSTANCE.toUser(userDTO);
     UserResponseDTO userResponseDTO = UserMapper.INSTANCE.toUserResponseDto(user);
@@ -155,8 +155,8 @@ public class UserControllerTests {
     return user;
   }
 
-  private String getRole() {
-    return RoleEnum.ADMIN.toString();
+  private String[] getRoles() {
+    return new String[] {RoleEnum.ADMIN.toString()};
   }
 
   private Address getAddress() {
