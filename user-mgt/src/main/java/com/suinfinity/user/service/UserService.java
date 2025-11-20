@@ -4,20 +4,22 @@ import com.suinfinity.user.dto.UserDTO;
 import com.suinfinity.user.dto.UserResponseDTO;
 import com.suinfinity.user.exception.UserNotFoundException;
 import com.suinfinity.user.mapper.UserMapper;
-import com.suinfinity.user.model.Authority;
 import com.suinfinity.user.model.Role;
 import com.suinfinity.user.model.User;
 import com.suinfinity.user.repository.AuthorityRepository;
 import com.suinfinity.user.repository.RoleRepository;
 import com.suinfinity.user.repository.UserRepository;
-import com.suinfinity.user.util.AuthorityEnum;
 import com.suinfinity.user.util.RoleEnum;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
@@ -33,13 +35,9 @@ public class UserService implements UserDetailsService {
 
   public ResponseEntity<?> registerUser(UserDTO userDTO) {
     User mappedUser = UserMapper.INSTANCE.toUser(userDTO);
-    long roleId = RoleEnum.valueOf(userDTO.getRole()).getValue();
-    Role role = this.getRole(roleId, userDTO.getRole());
-    long authorityId = AuthorityEnum.CREATE_USER.getValue();
-    Authority authority = this.getAuthority(authorityId);
-    role.setAuthorities(Collections.singletonList(authority));
-    mappedUser.setRoleId(roleId);
-    mappedUser.setRoles(Collections.singletonList(role));
+    Set<String> roles = userDTO.getRoles();
+    Set<Role> grantedRoles = this.getRoles(roles);
+    mappedUser.setGrantedRoles(grantedRoles);
     try {
       userRepository.save(mappedUser);
 
@@ -62,13 +60,21 @@ public class UserService implements UserDetailsService {
                   return new UserNotFoundException(
                       "User " + "'" + userName + "'" + " does not exist");
                 });
-
+    Set<GrantedAuthority> grantedAuthorities = getAuthorities(user.getGrantedRoles());
+    user.setAuthorities(grantedAuthorities);
     UserResponseDTO userResponseDTO = UserMapper.INSTANCE.toUserResponseDto(user);
     return ResponseEntity.ok().body(userResponseDTO);
   }
 
   public ResponseEntity<List<UserResponseDTO>> getUsers() {
     List<User> users = userRepository.findAll();
+    users.stream()
+        .map(
+            user -> {
+              Set<GrantedAuthority> grantedAuthorities = getAuthorities(user.getGrantedRoles());
+              user.setAuthorities(grantedAuthorities);
+              return user;
+            });
     List<UserResponseDTO> userResponseDTOS =
         users.stream().map(UserMapper.INSTANCE::toUserResponseDto).toList();
     if (users.isEmpty()) {
@@ -90,8 +96,9 @@ public class UserService implements UserDetailsService {
 
     user.setName(userDTO.getName());
     user.setPassword(userDTO.getPassword());
-    long roleId = RoleEnum.valueOf(userDTO.getRole()).ordinal();
-    user.setRoleId(roleId);
+    Set<String> roles = userDTO.getRoles();
+    Set<Role> grantedRoles = this.getRoles(roles);
+    user.setGrantedRoles(grantedRoles);
     user.setEmail(userDTO.getEmail());
     user.setIsEnable(userDTO.getIsEnable());
     user.setAddress(userDTO.getAddress());
@@ -115,29 +122,47 @@ public class UserService implements UserDetailsService {
     return ResponseEntity.noContent().build();
   }
 
-  private Role getRole(long roleId, String name) {
-    Role role =
-        roleRepository
-            .findById(roleId)
-            .orElseThrow(
-                () -> {
-                  log.error("Role '{}' does not exist ", name);
-                  return new RuntimeException("Role not found");
-                });
-    return role;
+  private Set<Role> getRoles(Set<String> roles) {
+    List<Long> roleIdList =
+        roles.stream()
+            .map(RoleEnum::valueOf)
+            .map(RoleEnum::getValue)
+            .map(Integer::longValue)
+            .toList();
+
+    Set<Role> grantedRoles = new HashSet<>(roleRepository.findAllById(roleIdList));
+
+    return grantedRoles;
   }
 
-  private Authority getAuthority(long authorityId) {
-    Authority authority =
-        authorityRepository
-            .findById(authorityId)
-            .orElseThrow(
-                () -> {
-                  log.error("Authority '{}' does not exist ", AuthorityEnum.CREATE_USER.name());
-                  return new RuntimeException("Authority not found");
-                });
-    return authority;
+  private Set<GrantedAuthority> getAuthorities(Set<Role> roles) {
+    Set<GrantedAuthority> grantedAuthorities =
+        roles.stream()
+            .flatMap(role -> role.getAuthorities().stream())
+            .map(authority -> new SimpleGrantedAuthority(authority.getAuthority()))
+            .collect(Collectors.toSet());
+    return grantedAuthorities;
   }
+
+  //  private Set<GrantedAuthority> getAuthorities(User user) {
+  //    Set<GrantedAuthority> grantedAuthorities =
+  //        user.getGrantedRoles().stream()
+  //            .flatMap(role -> role.getAuthorities().stream())
+  //            .map(authority -> new SimpleGrantedAuthority(authority.getAuthority()))
+  //            .collect(Collectors.toSet());
+  //
+  //    //    Authority authority =
+  //    //        authorityRepository
+  //    //            .findById(authorityId)
+  //    //            .orElseThrow(
+  //    //                () -> {
+  //    //                  log.error(
+  //    //                      "Authority '{}' does not exist ",
+  //    //                      AuthorityEnum.fromInt((int) authorityId).name());
+  //    //                  return new RuntimeException("Authority not found");
+  //    //                });
+  //    return grantedAuthorities;
+  //  }
 
   @Override
   public UserDetails loadUserByUsername(String userName) {

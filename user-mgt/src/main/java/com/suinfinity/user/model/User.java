@@ -13,8 +13,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
-import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
@@ -49,12 +48,15 @@ public class User implements UserDetails {
       name = "user_role_assignment",
       joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "userId"),
       inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "roleId"))
-  private List<Role> roles;
+  private Set<Role> grantedRoles;
 
-  @Override
-  public Collection<? extends GrantedAuthority> getAuthorities() {
-    return Role.builder().build().getAuthorities();
-  }
+  private Set<GrantedAuthority> authorities;
+
+//  @Override
+//  public Collection<GrantedAuthority> getAuthorities() {
+////    Role.builder().build().getAuthorities();
+//    return authorities;
+//  }
 
   @Override
   public String getUsername() {

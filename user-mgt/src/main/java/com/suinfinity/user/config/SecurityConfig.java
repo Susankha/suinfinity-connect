@@ -5,6 +5,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 import com.suinfinity.user.model.Authority;
 import com.suinfinity.user.util.AuthorityEnum;
 import com.suinfinity.user.util.RoleEnum;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
@@ -26,6 +27,9 @@ import org.springframework.security.web.servlet.util.matcher.PathPatternRequestM
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
+
+  @Value("${security.role.hierarchy}")
+  private String roleHierarchy;
 
   @Bean
   public static PasswordEncoder passwordEncoder() {
@@ -86,6 +90,6 @@ public class SecurityConfig {
 
   @Bean
   public RoleHierarchy roleHierarchy() {
-    return RoleHierarchyImpl.fromHierarchy("ADMIN > USER");
+    return RoleHierarchyImpl.fromHierarchy(roleHierarchy);
   }
 }
