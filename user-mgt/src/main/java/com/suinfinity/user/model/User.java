@@ -13,11 +13,11 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
+import java.util.List;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
@@ -50,13 +50,14 @@ public class User implements UserDetails {
       inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "roleId"))
   private Set<Role> grantedRoles;
 
-  private Set<GrantedAuthority> authorities;
+  private List<Authority> authorityList;
 
-//  @Override
-//  public Collection<GrantedAuthority> getAuthorities() {
-////    Role.builder().build().getAuthorities();
-//    return authorities;
-//  }
+  @Override
+  public List<Authority> getAuthorities() {
+    authorityList =
+        this.getGrantedRoles().stream().map(Role::getAuthorities).flatMap(Set::stream).toList();
+    return authorityList;
+  }
 
   @Override
   public String getUsername() {
