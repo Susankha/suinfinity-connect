@@ -12,10 +12,14 @@ import com.suinfinity.user.dto.UserDTO;
 import com.suinfinity.user.dto.UserDTO.Address;
 import com.suinfinity.user.dto.UserResponseDTO;
 import com.suinfinity.user.mapper.UserMapper;
+import com.suinfinity.user.model.Authority;
+import com.suinfinity.user.model.Role;
 import com.suinfinity.user.model.User;
 import com.suinfinity.user.service.UserService;
+import com.suinfinity.user.util.AuthorityEnum;
 import com.suinfinity.user.util.RoleEnum;
 import java.util.List;
+import java.util.Set;
 import java.util.random.RandomGenerator;
 import java.util.stream.Stream;
 import org.hamcrest.Matchers;
@@ -117,6 +121,7 @@ public class UserControllerTests {
         new UserDTO(NEW_TEST_USER, PASSWORD, getRoles(), EMAIL, IS_ENABLE, getAddress());
     String payload = getJsonPayload(userDTO);
     User user = UserMapper.INSTANCE.toUser(userDTO);
+    user.setGrantedRoles(getRolesAndAuthorities());
     UserResponseDTO userResponseDTO = UserMapper.INSTANCE.toUserResponseDto(user);
     Mockito.when(userService.updateUser(anyString(), any(UserDTO.class)))
         .thenReturn(ResponseEntity.ok().body(userResponseDTO));
@@ -152,11 +157,22 @@ public class UserControllerTests {
     user.setEmail(EMAIL);
     user.setIsEnable(IS_ENABLE);
     user.setAddress(this.getAddress());
+    user.setGrantedRoles(getRolesAndAuthorities());
     return user;
   }
 
   private String[] getRoles() {
     return new String[] {RoleEnum.ADMIN.toString()};
+  }
+
+  private Set<Role> getRolesAndAuthorities() {
+    Role role = Role.builder().build();
+    role.setRole(RoleEnum.ADMIN);
+    Authority authority = Authority.builder().build();
+    authority.setAuthority(AuthorityEnum.ALL);
+    Set<Authority> authorities = Set.of(authority);
+    role.setAuthorities(authorities);
+    return Set.of(role);
   }
 
   private Address getAddress() {
