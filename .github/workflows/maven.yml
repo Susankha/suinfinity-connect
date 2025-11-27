@@ -26,7 +26,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Build suinfinity core with Maven
-        run: mvn -B package --file suinfinity/pom.xml --role.initializer.enabled=false
+        run: mvn -B package --file suinfinity/pom.xml
       #- name: Build user-mgt with Maven
        # run: mvn -B package --file user-mgt/pom.xml -DskipTests
      # - name: Build product-mgt with Maven
