@@ -11,12 +11,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
 @Log4j2
 @Component
+@ConditionalOnProperty(name = "role.initializer.enabled", havingValue = "true")
 public class RoleInitializer implements ApplicationListener<ApplicationReadyEvent> {
 
   private final RoleRepository roleRepository;

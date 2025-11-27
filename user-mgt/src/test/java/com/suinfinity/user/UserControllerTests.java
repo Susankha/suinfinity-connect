@@ -11,7 +11,6 @@ import com.suinfinity.user.config.SecurityConfig;
 import com.suinfinity.user.dto.UserDTO;
 import com.suinfinity.user.dto.UserDTO.Address;
 import com.suinfinity.user.dto.UserResponseDTO;
-import com.suinfinity.user.init.RoleInitializer;
 import com.suinfinity.user.mapper.UserMapper;
 import com.suinfinity.user.model.Authority;
 import com.suinfinity.user.model.Role;
@@ -59,7 +58,6 @@ public class UserControllerTests {
   private static final String PASSWORD = "Ad$n8admin";
   private static final String EMAIL = "admin@test.mail";
   private static final boolean IS_ENABLE = true;
-  @MockitoBean RoleInitializer roleInitializer;
   @MockitoBean UserService userService;
   @Autowired MockMvc mockMvc;
   @Autowired WebApplicationContext webApplicationContext;
