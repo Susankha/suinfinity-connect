@@ -12,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Email;
 import java.util.List;
 import java.util.Set;
@@ -34,8 +35,6 @@ public class User implements UserDetails {
 
   private String password;
 
-  private Long roleId;
-
   @Email private String email;
 
   @ColumnDefault("true")
@@ -50,13 +49,13 @@ public class User implements UserDetails {
       inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "roleId"))
   private Set<Role> grantedRoles;
 
-  private List<Authority> authorityList;
+  @Transient private List<Authority> authorities;
 
   @Override
   public List<Authority> getAuthorities() {
-    authorityList =
+    authorities =
         this.getGrantedRoles().stream().map(Role::getAuthorities).flatMap(Set::stream).toList();
-    return authorityList;
+    return authorities;
   }
 
   @Override

@@ -11,6 +11,7 @@ import com.suinfinity.user.config.SecurityConfig;
 import com.suinfinity.user.dto.UserDTO;
 import com.suinfinity.user.dto.UserDTO.Address;
 import com.suinfinity.user.dto.UserResponseDTO;
+import com.suinfinity.user.init.RoleInitializer;
 import com.suinfinity.user.mapper.UserMapper;
 import com.suinfinity.user.model.Authority;
 import com.suinfinity.user.model.Role;
@@ -29,7 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -45,7 +46,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
-@WebMvcTest
+@SpringBootTest
 @AutoConfigureMockMvc
 @Import(SecurityConfig.class)
 @WithMockUser(username = "USER", roles = "ADMIN")
@@ -55,10 +56,10 @@ public class UserControllerTests {
   private static final String TEST_USER = "test_user";
   private static final String NEW_TEST_USER = "new_test_user";
   private static final String USER = "admin";
-  private static final long ROLE_ID = RoleEnum.ADMIN.ordinal();
   private static final String PASSWORD = "Ad$n8admin";
   private static final String EMAIL = "admin@test.mail";
   private static final boolean IS_ENABLE = true;
+  @MockitoBean RoleInitializer roleInitializer;
   @MockitoBean UserService userService;
   @Autowired MockMvc mockMvc;
   @Autowired WebApplicationContext webApplicationContext;
@@ -153,7 +154,6 @@ public class UserControllerTests {
     user.setUserId(RandomGenerator.getDefault().nextLong());
     user.setName(TEST_USER);
     user.setPassword(PASSWORD);
-    user.setRoleId(ROLE_ID);
     user.setEmail(EMAIL);
     user.setIsEnable(IS_ENABLE);
     user.setAddress(this.getAddress());
