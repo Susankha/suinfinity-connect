@@ -17,6 +17,7 @@
   <description>Connectivity to infinity</description>
   <url/>
   <modules>
+    <module>../common-utils</module>
     <module>../product-mgt</module>
     <module>../user-mgt</module>
     <module>../order-mgt</module>
